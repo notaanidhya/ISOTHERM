@@ -124,26 +124,26 @@ def prepare_model():
         idf.removeidfobject(rp)
         
     rp_winter = idf.newidfobject("RUNPERIOD")
-    rp_winter.Name = "Winter Representative Week"
+    rp_winter.Name = "Winter Representative Days"
     rp_winter.Begin_Month = 1
     rp_winter.Begin_Day_of_Month = 15
     rp_winter.End_Month = 1
-    rp_winter.End_Day_of_Month = 21
+    rp_winter.End_Day_of_Month = 16
     rp_winter.Day_of_Week_for_Start_Day = "Sunday"
     rp_winter.Use_Weather_File_Holidays_and_Special_Days = "No"
     rp_winter.Use_Weather_File_Daylight_Saving_Period = "No"
-    print("  + Created RunPeriod: Winter Representative Week (Jan 15 - Jan 21)")
+    print("  + Created RunPeriod: Winter Representative Days (Jan 15 - Jan 16)")
 
     rp_summer = idf.newidfobject("RUNPERIOD")
-    rp_summer.Name = "Summer Representative Week"
+    rp_summer.Name = "Summer Representative Days"
     rp_summer.Begin_Month = 7
     rp_summer.Begin_Day_of_Month = 1
     rp_summer.End_Month = 7
-    rp_summer.End_Day_of_Month = 7
+    rp_summer.End_Day_of_Month = 2
     rp_summer.Day_of_Week_for_Start_Day = "Sunday"
     rp_summer.Use_Weather_File_Holidays_and_Special_Days = "No"
     rp_summer.Use_Weather_File_Daylight_Saving_Period = "No"
-    print("  + Created RunPeriod: Summer Representative Week (Jul 1 - Jul 7)")
+    print("  + Created RunPeriod: Summer Representative Days (Jul 1 - Jul 2)")
 
     output_path = os.path.join("building_model", "5ZoneAirCooled_Prepared.idf")
     idf.saveas(output_path)

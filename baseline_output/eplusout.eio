@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 19:36
+Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 19:55
 ! <Version>, Version ID
  Version, 26.1
 ! <Timesteps per Hour>, #TimeSteps, Minutes per TimeStep {minutes}
@@ -802,27 +802,27 @@ HeatTransfer Surface,C5-1,Roof,,CTF - ConductionTransferFunction,CLNG-1,1.533,1.
 ! <Environment:Special Days>, Special Day Name, Special Day Type, Source, Start Date, Duration {#days}
 ! <Environment:Daylight Saving>, Daylight Saving Indicator, Source, Start Date, End Date
 ! <Environment:WarmupDays>, NumberofWarmupDays
-Environment,WINTER REPRESENTATIVE WEEK,WeatherFileRunPeriod,01/15/2017,01/21/2017,Sunday,7,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
+Environment,WINTER REPRESENTATIVE DAYS,WeatherFileRunPeriod,01/15/2017,01/16/2017,Sunday,2,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
 Environment:Daylight Saving,No,RunPeriod Object
 Environment:WarmupDays,  6
 ! <Tabular Report>,Style,Unit Conversion, Format Reals
 Tabular Report,HTML,None,Yes
 ! <Warmup Convergence Information>,Zone Name,Environment Type/Name,Average Warmup Temperature Difference {deltaC},Std Dev Warmup Temperature Difference {deltaC},Max Temperature Pass/Fail Convergence,Min Temperature Pass/Fail Convergence,Average Warmup Load Difference {W},Std Dev Warmup Load Difference {W},Heating Load Pass/Fail Convergence,Cooling Load Pass/Fail Convergence
- Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE WEEK,8.9641638122E-002,5.2725195645E-002,Pass,Pass,2.1592081996E-002,1.7286442134E-002,Pass,Pass
- Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE WEEK,0.1033897399,0.1128008010,Pass,Pass,0.1403019667,0.2618131855,Pass,Pass
- Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE WEEK,9.7574623974E-002,0.1168299025,Pass,Pass,0.1865096257,0.3344053067,Pass,Pass
- Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE WEEK,3.7627362542E-002,3.6137574775E-002,Pass,Pass,0.2704425056,0.4955672316,Pass,Pass
- Warmup Convergence Information,SPACE4-1,RunPeriod: WINTER REPRESENTATIVE WEEK,5.0256011320E-002,4.0797753627E-002,Pass,Pass,0.1850624608,0.3715262635,Pass,Pass
- Warmup Convergence Information,SPACE5-1,RunPeriod: WINTER REPRESENTATIVE WEEK,2.9417491657E-002,1.9104303255E-002,Pass,Pass,2.6160420558E-002,2.2840650966E-002,Pass,Pass
-Environment,SUMMER REPRESENTATIVE WEEK,WeatherFileRunPeriod,07/01/2007,07/07/2007,Sunday,7,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
+ Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE DAYS,8.9859522616E-002,5.3111167235E-002,Pass,Pass,2.1617380179E-002,1.7390253775E-002,Pass,Pass
+ Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE DAYS,0.1051720581,0.1142929062,Pass,Pass,0.1517753435,0.3265226065,Pass,Pass
+ Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE DAYS,9.7496142617E-002,0.1166651652,Pass,Pass,0.1867611897,0.3339306003,Pass,Pass
+ Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE DAYS,3.7707939781E-002,3.6305273017E-002,Pass,Pass,0.2632355327,0.4641796359,Pass,Pass
+ Warmup Convergence Information,SPACE4-1,RunPeriod: WINTER REPRESENTATIVE DAYS,5.0380909842E-002,4.0922860981E-002,Pass,Pass,0.1857576132,0.3716333734,Pass,Pass
+ Warmup Convergence Information,SPACE5-1,RunPeriod: WINTER REPRESENTATIVE DAYS,2.9526619911E-002,1.9161590120E-002,Pass,Pass,2.6274288484E-002,2.2962864655E-002,Pass,Pass
+Environment,SUMMER REPRESENTATIVE DAYS,WeatherFileRunPeriod,07/01/2007,07/02/2007,Sunday,2,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
 Environment:Daylight Saving,No,RunPeriod Object
 Environment:WarmupDays,  6
- Warmup Convergence Information,PLENUM-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,9.3403808886E-002,5.3200915990E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE1-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,6.0080236381E-002,4.0107673874E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE2-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,8.7600886552E-002,6.3852230235E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE3-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,8.3601740385E-002,5.8097032779E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE4-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,8.9297388030E-002,5.7563666814E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE5-1,RunPeriod: SUMMER REPRESENTATIVE WEEK,3.2235926636E-002,1.6874799206E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,PLENUM-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,9.3404095808E-002,5.3201011668E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,SPACE1-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,6.0082643986E-002,4.0109322767E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,SPACE2-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,8.7600423420E-002,6.3851818974E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,SPACE3-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,8.3601732829E-002,5.8095744651E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,SPACE4-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,8.9297673179E-002,5.7563755530E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
+ Warmup Convergence Information,SPACE5-1,RunPeriod: SUMMER REPRESENTATIVE DAYS,3.2236132263E-002,1.6874739854E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
 ! <Program Control Information:Threads/Parallel Sims>, Threading Supported,Maximum Number of Threads, Env Set Threads (OMP_NUM_THREADS), EP Env Set Threads (EP_OMP_NUM_THREADS), IDF Set Threads, Number of Threads Used (Interior Radiant Exchange), Number Nominal Surfaces, Number Parallel Sims
 Program Control Information:Threads/Parallel Sims, No,1, N/A, N/A, N/A, N/A, N/A, N/A
 End of Data
