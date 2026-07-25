@@ -1,0 +1,29 @@
+{
+  "baseline": {
+    "total_kwh": 752.6150817753489,
+    "total_cost_usd": 73.49873864900306,
+    "peak_kw": 0.6177437942425504,
+    "total_carbon_kg": 301.17662746531494,
+    "comfort_compliance_pct": 68.32167832167832,
+    "iaq_compliance_pct": 22.435897435897438,
+    "record_count": 12480
+  },
+  "ai_optimized": {
+    "total_kwh": 0.0,
+    "total_cost_usd": 0.0,
+    "peak_kw": 0.0,
+    "total_carbon_kg": 0.0,
+    "comfort_compliance_pct": 100.0,
+    "iaq_compliance_pct": 0.0,
+    "record_count": 150
+  },
+  "savings": {
+    "energy_kwh_saved": 752.6150817753489,
+    "energy_savings_pct": 100.0,
+    "cost_usd_saved": 73.49873864900306,
+    "cost_savings_pct": 100.0,
+    "peak_kw_reduced": 0.6177437942425504,
+    "peak_reduction_pct": 100.0,
+    "carbon_kg_saved": 301.17662746531494
+  }
+}

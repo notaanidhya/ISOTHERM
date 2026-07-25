@@ -1,0 +1,16 @@
+ ReadVarsESO
+ processing:C:\Projects\Honeywell_hack\building_model\5ZoneAirCooled_Prepared.rvi
+ input file:sim_output\eplusout.eso
+ output file:sim_output\eplusout.csv
+ getting all vars from:sim_output\eplusout.eso
+  number variables requested for output=          83
+ ReadVars Run Time=00hr 00min  0.17sec
+ ReadVarsESO program completed successfully.
+ ReadVarsESO
+ processing:C:\Projects\Honeywell_hack\building_model\5ZoneAirCooled_Prepared.mvi
+ input file:sim_output\eplusout.mtr
+ output file:sim_output\eplusmtr.csv
+ getting all vars from:sim_output\eplusout.mtr
+  number variables requested for output=          20
+ ReadVars Run Time=00hr 00min  0.02sec
+ ReadVarsESO program completed successfully.

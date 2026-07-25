@@ -1,0 +1,81 @@
+import sys
+from src.config import ZONES
+
+class SensorRegistry:
+    def __init__(self):
+        self.temp_handles = {}
+        self.pmv_handles = {}
+        self.iaq_handles = {}
+        self.outdoor_temp_handle = -1
+        self.hvac_power_handle = -1
+        self.initialized = False
+
+    def init_handles(self, state, api):
+        """Initializes API variable handles for all 5 zones and outdoor environment."""
+        for z in ZONES:
+            # 1. Zone Air Temperature
+            h_temp = api.exchange.get_variable_handle(state, "Zone Air Temperature", z)
+            self.temp_handles[z] = h_temp
+            
+            # 2. Zone Fanger PMV
+            h_pmv = api.exchange.get_variable_handle(state, "Zone Thermal Comfort Fanger Model PMV", z)
+            self.pmv_handles[z] = h_pmv
+            
+            # 3. Zone Mechanical Ventilation Mass Flow Rate (IAQ proxy)
+            h_iaq = api.exchange.get_variable_handle(state, "Zone Mechanical Ventilation Mass Flow Rate", z)
+            self.iaq_handles[z] = h_iaq
+
+        # Outdoor Drybulb Temp
+        self.outdoor_temp_handle = api.exchange.get_variable_handle(
+            state, "Site Outdoor Air Drybulb Temperature", "Environment"
+        )
+        
+        # HVAC Meter Handle (or Fallback Rate)
+        self.hvac_power_handle = api.exchange.get_meter_handle(state, "Electricity:HVAC")
+        if self.hvac_power_handle == -1:
+            self.hvac_power_handle = api.exchange.get_meter_handle(state, "Electricity:Facility")
+
+        self.initialized = True
+        print(f"[Sensors] Handles initialized for 5 zones. Outdoor Temp Handle: {self.outdoor_temp_handle}")
+
+    def read_zone_sensors(self, state, api, zone_name: str) -> dict:
+        """Reads temperature, PMV, and IAQ flow rate for a given zone."""
+        temp = None
+        pmv = None
+        iaq = None
+
+        h_t = self.temp_handles.get(zone_name, -1)
+        if h_t != -1:
+            temp = api.exchange.get_variable_value(state, h_t)
+
+        h_p = self.pmv_handles.get(zone_name, -1)
+        if h_p != -1:
+            pmv = api.exchange.get_variable_value(state, h_p)
+
+        h_i = self.iaq_handles.get(zone_name, -1)
+        if h_i != -1:
+            iaq = api.exchange.get_variable_value(state, h_i)
+
+        return {
+            "temp_c": temp,
+            "pmv": pmv,
+            "iaq_vent_flow": iaq
+        }
+
+    def read_environment_sensors(self, state, api) -> dict:
+        """Reads outdoor temperature and overall HVAC power demand."""
+        outdoor_temp = None
+        hvac_kw = 0.0
+
+        if self.outdoor_temp_handle != -1:
+            outdoor_temp = api.exchange.get_variable_value(state, self.outdoor_temp_handle)
+
+        if self.hvac_power_handle != -1:
+            # Meter reading returns Joules over timestep -> convert to average kW (1 timestep = 15 min = 900 s)
+            joules = api.exchange.get_meter_value(state, self.hvac_power_handle)
+            hvac_kw = joules / 900.0 / 1000.0 if joules > 0 else 0.0
+
+        return {
+            "outdoor_temp_c": outdoor_temp,
+            "hvac_power_kw": hvac_kw
+        }
