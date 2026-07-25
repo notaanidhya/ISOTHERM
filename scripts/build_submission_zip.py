@@ -27,9 +27,10 @@ def build_submission_zip():
         os.path.join("building_model", "5ZoneAirCooled_AI_Optimized.idf"),
         os.path.join("building_model", "USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw"),
         os.path.join("docs", "architecture.md"),
+        os.path.join("docs", "demo_video_script.md"),
     ]
 
-    directories_to_include = ["src", "scripts", "tests"]
+    directories_to_include = ["src", "scripts", "dashboard", "tests"]
 
     with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zipf:
         # Add single files
