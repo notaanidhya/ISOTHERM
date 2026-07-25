@@ -127,6 +127,12 @@ def main():
         "AI Optimized": ai_metrics["comfort_compliance_pct"],
         "Savings": ai_metrics["comfort_compliance_pct"] - base_metrics["comfort_compliance_pct"],
         "Savings (%)": 0.0
+    }, {
+        "Metric": "IAQ Flow Monitored (%) [Uncontrolled]",
+        "Baseline": base_metrics["iaq_compliance_pct"],
+        "AI Optimized": ai_metrics["iaq_compliance_pct"],
+        "Savings": ai_metrics["iaq_compliance_pct"] - base_metrics["iaq_compliance_pct"],
+        "Savings (%)": 0.0
     }])
     df_res.to_csv(csv_path, index=False)
 

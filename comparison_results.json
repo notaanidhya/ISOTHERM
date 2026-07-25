@@ -1,29 +1,29 @@
 {
   "baseline": {
-    "total_kwh": 752.6150817753489,
-    "total_cost_usd": 73.49873864900306,
-    "peak_kw": 0.6177437942425504,
-    "total_carbon_kg": 301.17662746531494,
-    "comfort_compliance_pct": 54.38811188811189,
-    "iaq_compliance_pct": 22.435897435897438,
-    "record_count": 12480
+    "total_kwh": 391.61194505341473,
+    "total_cost_usd": 36.70400278228069,
+    "peak_kw": 0.5051466959580643,
+    "total_carbon_kg": 154.43618358732573,
+    "comfort_compliance_pct": 51.96022727272728,
+    "iaq_compliance_pct": 7.291666666666667,
+    "record_count": 7680
   },
   "ai_optimized": {
-    "total_kwh": 754.7374741157194,
-    "total_cost_usd": 73.78305294651922,
-    "peak_kw": 0.5824728670959443,
-    "total_carbon_kg": 302.12449485082317,
-    "comfort_compliance_pct": 66.4160839160839,
-    "iaq_compliance_pct": 22.435897435897438,
-    "record_count": 12480
+    "total_kwh": 388.17482475766496,
+    "total_cost_usd": 36.21421030012573,
+    "peak_kw": 0.4128945590090085,
+    "total_carbon_kg": 152.87831166717478,
+    "comfort_compliance_pct": 87.89772727272728,
+    "iaq_compliance_pct": 7.291666666666667,
+    "record_count": 7680
   },
   "savings": {
-    "energy_kwh_saved": -2.122392340370425,
-    "energy_savings_pct": -0.2820023663841414,
-    "cost_usd_saved": -0.2843142975161612,
-    "cost_savings_pct": -0.38682881195270374,
-    "peak_kw_reduced": 0.03527092714660618,
-    "peak_reduction_pct": 5.709636822795412,
-    "carbon_kg_saved": -0.947867385508232
+    "energy_kwh_saved": 3.4371202957497644,
+    "energy_savings_pct": 0.877685254284302,
+    "cost_usd_saved": 0.48979248215496085,
+    "cost_savings_pct": 1.3344388759457435,
+    "peak_kw_reduced": 0.09225213694905576,
+    "peak_reduction_pct": 18.262444887240093,
+    "carbon_kg_saved": 1.5578719201509443
   }
 }

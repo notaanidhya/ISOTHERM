@@ -25,6 +25,11 @@ BASELINE_DB_PATH = os.path.join(PROJECT_ROOT, "baseline_state.db")
 ZONES = ["SPACE1-1", "SPACE2-1", "SPACE3-1", "SPACE4-1", "SPACE5-1"]
 OLLAMA_MODEL = "llama3.1:latest"
 
+# Occupancy schedule
+OCCUPIED_HOURS = (8, 18)               # Building occupied 08:00–17:59
+UNOCCUPIED_COOLING_CEILING = 27.5      # Hard cap when unoccupied — prevents SPACE2-1 overshoot
+UNOCCUPIED_HEATING_FLOOR   = 16.0      # Hard floor when unoccupied — allows true night setback
+
 # Safety boundaries
 SAFETY_BOUNDS = {
     "heating": (16.0, 24.0),

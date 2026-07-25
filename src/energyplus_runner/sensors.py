@@ -50,7 +50,13 @@ class SensorRegistry:
             self.is_meter_handle = False
 
         self.initialized = True
-        print(f"[Sensors] Handles initialized for 5 zones. Outdoor: {self.outdoor_temp_handle}, HVAC Power: {self.hvac_power_handle} (is_meter={self.is_meter_handle}), PMV handles: {self.pmv_handles}")
+        meter_name = "N/A"
+        if self.is_meter_handle and self.hvac_power_handle != -1:
+            try:
+                meter_name = api.exchange.get_meter_name(state, self.hvac_power_handle)
+            except Exception:
+                meter_name = "Electricity:HVAC"
+        print(f"[Sensors] Handles initialized for 5 zones. Outdoor: {self.outdoor_temp_handle}, HVAC Power handle: {self.hvac_power_handle} (is_meter={self.is_meter_handle}, meter_name='{meter_name}'), PMV handles: {self.pmv_handles}")
 
     def read_zone_sensors(self, state, api, zone_name: str) -> dict:
         """Reads temperature, PMV, and IAQ flow rate for a given zone."""

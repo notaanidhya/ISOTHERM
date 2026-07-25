@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import threading
 from src.config import DB_PATH
@@ -10,8 +11,15 @@ def get_connection(db_path=DB_PATH):
     conn.row_factory = sqlite3.Row
     return conn
 
-def init_db(db_path=DB_PATH):
+def init_db(db_path=DB_PATH, reset=False):
     """Initializes the 3 SQLite tables for sensor data, pending actions, and LLM decisions."""
+    if reset and os.path.exists(db_path):
+        try:
+            os.remove(db_path)
+            print(f"Removed stale database at: {db_path}")
+        except Exception as e:
+            print(f"Warning clearing database {db_path}: {e}")
+
     with _db_lock:
         with get_connection(db_path) as conn:
             cursor = conn.cursor()

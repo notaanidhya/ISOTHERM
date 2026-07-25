@@ -11,7 +11,7 @@ def run_synchronous_simulation(idf_path=PREPARED_IDF_PATH, epw_path=WEATHER_PATH
         output_dir = os.path.join(PROJECT_ROOT, "sim_output")
         
     os.makedirs(output_dir, exist_ok=True)
-    init_db(db_path=db_path)
+    init_db(db_path=db_path, reset=True)
 
     api = EnergyPlusAPI()
     state = api.state_manager.new_state()

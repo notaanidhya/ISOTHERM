@@ -30,7 +30,7 @@ def run_baseline():
 
     output_dir = os.path.join(PROJECT_ROOT, "baseline_output")
     os.makedirs(output_dir, exist_ok=True)
-    init_db(db_path=BASELINE_DB_PATH)
+    init_db(db_path=BASELINE_DB_PATH, reset=True)
 
     api = EnergyPlusAPI()
     state = api.state_manager.new_state()

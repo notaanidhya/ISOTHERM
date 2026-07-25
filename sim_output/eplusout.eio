@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 19:56
+Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 23:46
 ! <Version>, Version ID
  Version, 26.1
 ! <Timesteps per Hour>, #TimeSteps, Minutes per TimeStep {minutes}
@@ -786,4 +786,30 @@ HeatTransfer Surface,C3-1,Roof,,CTF - ConductionTransferFunction,CLNG-1,1.533,1.
 Zone Surfaces,SPACE4-1,7
 HeatTransfer Surface,LEFT-1,Wall,,CTF - ConductionTransferFunction,WALL-1,0.408,0.384,,27.36,36.48,27.36,300.00,90.00,15.20,2.40,0.00,ExternalEnvironment,ASHRAESimple,ASHRAESimple,SunExposed,WindExposed,0.50,0.50,0.50,0.50,4
 HeatTransfer Surface,WL-1,Window,LEFT-1,Window5 Detailed Fenestration,DBL CLR 3MM/13MM AIR,N/A,2.720,No,9.12,9.12,9.12,300.00,90.00,7.60,1.20,0.00,ExternalEnvironment,ASHRAESimple,ASHRAESimple,SunExposed,WindExposed,0.50,0.50,0.50,0.50,4
-HeatTransfer Surface,SB41,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,12.56,12.56,12.56,165.00,90.00,5.23,2
+HeatTransfer Surface,SB41,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,12.56,12.56,12.56,165.00,90.00,5.23,2.40,0.00,SB14,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,SB43,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,12.39,12.39,12.39,74.22,90.00,5.16,2.40,0.00,SB34,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,SB45,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,18.96,18.96,18.96,120.00,90.00,7.90,2.40,0.00,SB54,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,F4-1,Floor,,CTF - ConductionTransferFunction,FLOOR-SLAB-1,12.894,3.119,,42.74,42.74,42.74,120.00,180.00,15.20,5.23,0.00,Ground,N/A-Ground,ASHRAESimple,NoSun,NoWind,0.00,0.00,1.00,0.00,4
+HeatTransfer Surface,C4-1,Roof,,CTF - ConductionTransferFunction,CLNG-1,1.533,1.189,,42.74,42.74,42.74,300.00,0.00,15.20,5.16,0.00,C4-1P,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,1.00,0.00,1.00,4
+Zone Surfaces,SPACE5-1,6
+HeatTransfer Surface,SB51,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,55.44,55.44,55.44,210.00,90.00,23.10,2.40,0.00,SB15,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,SB52,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,18.96,18.96,18.96,120.00,90.00,7.90,2.40,0.00,SB25,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,SB53,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,55.44,55.44,55.44,30.00,90.00,23.10,2.40,0.00,SB35,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,SB54,Wall,,CTF - ConductionTransferFunction,INT-WALL-1,2.811,1.978,,18.96,18.96,18.96,300.00,90.00,7.90,2.40,0.00,SB45,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,0.50,0.50,0.50,4
+HeatTransfer Surface,F5-1,Floor,,CTF - ConductionTransferFunction,FLOOR-SLAB-1,12.894,3.119,,182.49,182.49,182.49,30.00,180.00,23.10,7.90,0.00,Ground,N/A-Ground,ASHRAESimple,NoSun,NoWind,0.00,0.00,1.00,0.00,4
+HeatTransfer Surface,C5-1,Roof,,CTF - ConductionTransferFunction,CLNG-1,1.533,1.189,,182.49,182.49,182.49,210.00,0.00,23.10,7.90,0.00,C5-1P,Other/Same Surface Int Conv,ASHRAESimple,NoSun,NoWind,0.00,1.00,0.00,1.00,4
+! <Environment>,Environment Name,Environment Type, Start Date, End Date, Start DayOfWeek, Duration {#days}, Source:Start DayOfWeek,  Use Daylight Saving, Use Holidays, Apply Weekend Holiday Rule,  Use Rain Values, Use Snow Values, Sky Temperature Model
+! <Environment:Special Days>, Special Day Name, Special Day Type, Source, Start Date, Duration {#days}
+! <Environment:Daylight Saving>, Daylight Saving Indicator, Source, Start Date, End Date
+! <Environment:WarmupDays>, NumberofWarmupDays
+Environment,WINTER REPRESENTATIVE DAYS,WeatherFileRunPeriod,01/15/2017,01/16/2017,Sunday,2,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
+Environment:Daylight Saving,No,RunPeriod Object
+Environment:WarmupDays,  6
+! <Tabular Report>,Style,Unit Conversion, Format Reals
+Tabular Report,HTML,None,Yes
+! <Warmup Convergence Information>,Zone Name,Environment Type/Name,Average Warmup Temperature Difference {deltaC},Std Dev Warmup Temperature Difference {deltaC},Max Temperature Pass/Fail Convergence,Min Temperature Pass/Fail Convergence,Average Warmup Load Difference {W},Std Dev Warmup Load Difference {W},Heating Load Pass/Fail Convergence,Cooling Load Pass/Fail Convergence
+ Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE DAYS,9.4803767511E-002,5.4749291047E-002,Pass,Pass,2.1928193353E-002,1.6584087083E-002,Pass,Pass
+ Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE DAYS,0.1201497404,0.1076305560,Pass,Pass,0.2964011498,0.8385881549,Pass,Pass
+ Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE DAYS,0.1092264923,0.1168018711,Pass,Pass,0.1193894845,9.6567509048E-002,Pass,Pass
+ Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE DAYS,5.2850359743E-002,3.3556592175E-002,Pass,Pass,2.1967599338,15.1299322841,Pass,Pass
+ Warmup Convergence 
