@@ -22,6 +22,7 @@ def run_synchronous_simulation(idf_path=PREPARED_IDF_PATH, epw_path=WEATHER_PATH
     callback = create_synchronous_callback(api, db_path=db_path)
     api.runtime.callback_end_zone_timestep_after_zone_reporting(state, callback)
 
+    os.makedirs(output_dir, exist_ok=True)
     cmd_args = [
         "-w", epw_path,
         "-d", output_dir,
