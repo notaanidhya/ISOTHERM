@@ -530,10 +530,18 @@ SCHEDULE:COMPACT,
 SCHEDULE:COMPACT,
     Clothing-Sch,             !- Name
     Any Number,               !- Schedule Type Limits Name
-    Through: 12/31,           !- Field 1
+    Through: 4/30,            !- Field 1
     For: AllDays,             !- Field 2
     Until: 24:00,             !- Field 3
-    1;                        !- Field 4
+    1,                        !- Field 4
+    Through: 9/30,            !- Field 5
+    For: AllDays,             !- Field 6
+    Until: 24:00,             !- Field 7
+    0.5,                      !- Field 8
+    Through: 12/31,           !- Field 9
+    For: AllDays,             !- Field 10
+    Until: 24:00,             !- Field 11
+    1;                        !- Field 12
 
 SCHEDULE:COMPACT,
     Work-Eff-Sch,             !- Name

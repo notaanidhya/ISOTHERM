@@ -1,104 +1,122 @@
 {
   "baseline": {
-    "total_kwh": 0.6523817501013364,
-    "total_cost_usd": 0.03261908750506681,
-    "total_carbon_kg": 0.20882719340065284,
-    "peak_kw": 0.35647400454317224,
-    "occupied_kwh": 0.0,
-    "unoccupied_kwh": 0.6523817501013364,
-    "unoccupied_kwh_pct": 100.0,
-    "peak_tou_kwh": 0.0,
-    "peak_tou_cost_usd": 0.0,
-    "comfort_compliance_pct": 49.253246753246756,
-    "too_cold_pct": 49.12337662337662,
-    "too_hot_pct": 1.6233766233766231,
-    "mean_pmv": -0.5682635224204123,
-    "peak_tou_comfort_pct": 48.724489795918366,
+    "total_kwh": 24.691616033679193,
+    "elec_kwh": 9.033068386120204,
+    "gas_kwh": 15.658547647558986,
+    "total_cost_usd": 1.4543731746300452,
+    "elec_cost_usd": 0.8280312687276854,
+    "gas_cost_usd": 0.6263419059023596,
+    "total_carbon_kg": 6.368385130277708,
+    "elec_carbon_kg": 3.534188006069531,
+    "gas_carbon_kg": 2.8341971242081767,
+    "peak_kw": 2.989159969029392,
+    "occupied_kwh": 7.143778375457717,
+    "unoccupied_kwh": 17.54783765822148,
+    "unoccupied_kwh_pct": 71.06799990039676,
+    "peak_tou_kwh": 2.6346449459517274,
+    "peak_tou_cost_usd": 0.3763778494216753,
+    "comfort_compliance_pct": 23.40909090909091,
+    "too_cold_pct": 76.5909090909091,
+    "too_hot_pct": 0.0,
+    "mean_pmv": -0.7733267715167544,
+    "peak_tou_comfort_pct": 27.142857142857142,
     "per_zone_comfort": {
       "SPACE1-1": {
-        "comfort_pct": 52.435064935064936,
-        "mean_pmv": -0.604244520558318,
-        "mean_temp_c": 21.081122160272038
+        "comfort_pct": 17.045454545454543,
+        "mean_pmv": -0.7719008301833941,
+        "mean_temp_c": 21.07307521007747
       },
       "SPACE2-1": {
-        "comfort_pct": 48.701298701298704,
-        "mean_pmv": -0.575947476959154,
-        "mean_temp_c": 21.720820593793956
+        "comfort_pct": 44.31818181818182,
+        "mean_pmv": -0.5824415182789128,
+        "mean_temp_c": 21.71090291908767
       },
       "SPACE3-1": {
-        "comfort_pct": 47.72727272727273,
-        "mean_pmv": -0.619438550545377,
-        "mean_temp_c": 20.70706971956428
+        "comfort_pct": 26.136363636363637,
+        "mean_pmv": -0.8302325754497996,
+        "mean_temp_c": 20.698920860749563
       },
       "SPACE4-1": {
-        "comfort_pct": 47.4025974025974,
-        "mean_pmv": -0.6054746154328174,
-        "mean_temp_c": 20.857812500213893
+        "comfort_pct": 29.545454545454547,
+        "mean_pmv": -0.7872950748450104,
+        "mean_temp_c": 20.8488131977698
       },
       "SPACE5-1": {
-        "comfort_pct": 50.0,
-        "mean_pmv": -0.4362124486063953,
-        "mean_temp_c": 20.65077477433964
+        "comfort_pct": 0.0,
+        "mean_pmv": -0.8947638588266558,
+        "mean_temp_c": 20.63890313598384
       }
     },
     "iaq_compliance_pct": 0.0,
-    "record_count": 6720
+    "record_count": 960
   },
   "ai_optimized": {
-    "total_kwh": 2.453257642611498,
-    "total_cost_usd": 0.21593668203223798,
-    "total_carbon_kg": 0.9428459711516501,
-    "peak_kw": 0.6908343768865253,
-    "occupied_kwh": 0.8617730683004117,
-    "unoccupied_kwh": 1.5914845743110861,
-    "unoccupied_kwh_pct": 64.87229660138539,
-    "peak_tou_kwh": 0.8617730683004117,
-    "peak_tou_cost_usd": 0.11705624164655115,
-    "comfort_compliance_pct": 49.577922077922075,
-    "too_cold_pct": 48.798701298701296,
-    "too_hot_pct": 1.6233766233766231,
-    "mean_pmv": -0.3324553780294221,
-    "peak_tou_comfort_pct": 49.08163265306123,
+    "total_kwh": 73.57477199590286,
+    "elec_kwh": 9.033068386120204,
+    "gas_kwh": 64.54170360978264,
+    "total_cost_usd": 3.4096994131189917,
+    "elec_cost_usd": 0.8280312687276854,
+    "gas_cost_usd": 2.581668144391306,
+    "total_carbon_kg": 15.216236359440188,
+    "elec_carbon_kg": 3.534188006069531,
+    "gas_carbon_kg": 11.68204835337066,
+    "peak_kw": 19.45645882621521,
+    "occupied_kwh": 45.99171133577181,
+    "unoccupied_kwh": 27.583060660131046,
+    "unoccupied_kwh_pct": 37.489835050616335,
+    "peak_tou_kwh": 7.002656161878077,
+    "peak_tou_cost_usd": 0.5510982980587292,
+    "comfort_compliance_pct": 24.545454545454547,
+    "too_cold_pct": 75.45454545454545,
+    "too_hot_pct": 0.0,
+    "mean_pmv": -0.6722594276884579,
+    "peak_tou_comfort_pct": 28.57142857142857,
     "per_zone_comfort": {
       "SPACE1-1": {
-        "comfort_pct": 53.08441558441559,
-        "mean_pmv": -0.3486100152549094,
-        "mean_temp_c": 21.811989903204882
+        "comfort_pct": 19.318181818181817,
+        "mean_pmv": -0.6785107279477085,
+        "mean_temp_c": 21.6391273032089
       },
       "SPACE2-1": {
-        "comfort_pct": 49.67532467532468,
-        "mean_pmv": -0.3202476199430523,
-        "mean_temp_c": 22.353833056175908
+        "comfort_pct": 47.72727272727273,
+        "mean_pmv": -0.5240295658202645,
+        "mean_temp_c": 22.046585296281805
       },
       "SPACE3-1": {
-        "comfort_pct": 47.72727272727273,
-        "mean_pmv": -0.348923376045642,
-        "mean_temp_c": 21.96756818960293
+        "comfort_pct": 26.136363636363637,
+        "mean_pmv": -0.6930987560960508,
+        "mean_temp_c": 21.542030785241426
       },
       "SPACE4-1": {
-        "comfort_pct": 47.4025974025974,
-        "mean_pmv": -0.336012258199268,
-        "mean_temp_c": 22.039210952447107
+        "comfort_pct": 29.545454545454547,
+        "mean_pmv": -0.65145543548283,
+        "mean_temp_c": 21.661790619034647
       },
       "SPACE5-1": {
-        "comfort_pct": 50.0,
-        "mean_pmv": -0.30848362070423874,
-        "mean_temp_c": 21.31555774236123
+        "comfort_pct": 0.0,
+        "mean_pmv": -0.8142026530954367,
+        "mean_temp_c": 21.12020212478561
       }
     },
     "iaq_compliance_pct": 0.0,
-    "record_count": 6720
+    "record_count": 960
   },
   "savings": {
-    "energy_kwh_saved": -1.8008758925101618,
-    "energy_savings_pct": -276.0463321100608,
-    "cost_usd_saved": -0.18331759452717117,
-    "cost_savings_pct": -561.9948580679822,
-    "peak_kw_reduced": -0.33436037234335303,
-    "peak_reduction_pct": -93.79656527040218,
-    "carbon_kg_saved": -0.7340187777509973,
-    "carbon_savings_pct": -351.49578261233415,
-    "unoccupied_kwh_saved": -0.9391028242097498,
-    "unoccupied_kwh_savings_pct": -143.94989192506935
+    "energy_kwh_saved": -48.88315596222367,
+    "energy_savings_pct": -197.97471293716612,
+    "elec_kwh_saved": 0.0,
+    "elec_savings_pct": 0.0,
+    "gas_kwh_saved": -48.883155962223654,
+    "gas_savings_pct": -312.18192812309803,
+    "cost_usd_saved": -1.9553262384889465,
+    "cost_savings_pct": -134.44460284316855,
+    "elec_cost_usd_saved": 0.0,
+    "gas_cost_usd_saved": -1.9553262384889465,
+    "peak_kw_reduced": -16.46729885718582,
+    "peak_reduction_pct": -550.900554931923,
+    "carbon_kg_saved": -8.84785122916248,
+    "carbon_savings_pct": -138.9339848040354,
+    "unoccupied_kwh_saved": -10.035223001909568,
+    "unoccupied_kwh_savings_pct": -57.187803975425346
   }
 }

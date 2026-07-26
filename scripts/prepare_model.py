@@ -29,16 +29,24 @@ def prepare_model():
         vel_sch.Field_4 = 0.1
         print("  + Created Air-Vel-Sch (0.1 m/s)")
         
-    # 2. Clothing Schedule (1.0 clo constant)
+    # 2. Clothing Schedule (1.0 clo winter, 0.5 clo summer)
     if not idf.getobject("SCHEDULE:COMPACT", "Clothing-Sch"):
         clo_sch = idf.newidfobject("SCHEDULE:COMPACT")
         clo_sch.Name = "Clothing-Sch"
         clo_sch.Schedule_Type_Limits_Name = "Any Number"
-        clo_sch.Field_1 = "Through: 12/31"
+        clo_sch.Field_1 = "Through: 4/30"
         clo_sch.Field_2 = "For: AllDays"
         clo_sch.Field_3 = "Until: 24:00"
         clo_sch.Field_4 = 1.0
-        print("  + Created Clothing-Sch (1.0 clo)")
+        clo_sch.Field_5 = "Through: 9/30"
+        clo_sch.Field_6 = "For: AllDays"
+        clo_sch.Field_7 = "Until: 24:00"
+        clo_sch.Field_8 = 0.5
+        clo_sch.Field_9 = "Through: 12/31"
+        clo_sch.Field_10 = "For: AllDays"
+        clo_sch.Field_11 = "Until: 24:00"
+        clo_sch.Field_12 = 1.0
+        print("  + Created Clothing-Sch (1.0 clo winter, 0.5 clo summer)")
 
     # 3. Work Efficiency Schedule (0.0 constant)
     if not idf.getobject("SCHEDULE:COMPACT", "Work-Eff-Sch"):

@@ -12,8 +12,8 @@ class SensorRegistry:
         self.gas_power_handle = -1    # Phase 02: NaturalGas:Facility for heating savings
         
         # Cumulative meter state tracking (EnergyPlus get_meter_value returns cumulative Joules)
-        self.prev_elec_joules = 0.0
-        self.prev_gas_joules  = 0.0
+        self.prev_elec_joules = None
+        self.prev_gas_joules  = None
         self.initialized = False
 
     def init_handles(self, state, api):
@@ -107,22 +107,22 @@ class SensorRegistry:
         if self.hvac_power_handle != -1:
             if self.is_meter_handle:
                 curr_elec = api.exchange.get_meter_value(state, self.hvac_power_handle)
-                delta_elec = max(0.0, curr_elec - self.prev_elec_joules) if self.prev_elec_joules > 0 else 0.0
-                self.prev_elec_joules = curr_elec
-                elec_kw = delta_elec / 900.0 / 1000.0
+                # get_meter_value returns Joules consumed during this 15-minute zone timestep
+                elec_kw = curr_elec / 900.0 / 1000.0
             else:
                 watts = api.exchange.get_variable_value(state, self.hvac_power_handle)
                 elec_kw = watts / 1000.0 if watts and watts > 0 else 0.0
 
         if self.gas_power_handle != -1:
             curr_gas = api.exchange.get_meter_value(state, self.gas_power_handle)
-            delta_gas = max(0.0, curr_gas - self.prev_gas_joules) if self.prev_gas_joules > 0 else 0.0
-            self.prev_gas_joules = curr_gas
-            gas_kw = delta_gas / 900.0 / 1000.0
+            # get_meter_value returns Joules consumed during this 15-minute zone timestep
+            gas_kw = curr_gas / 900.0 / 1000.0
+
+        total_kw = elec_kw + gas_kw
 
         return {
             "outdoor_temp_c": outdoor_temp,
-            "hvac_power_kw": elec_kw + gas_kw,   # combined timestep average kW rate
+            "hvac_power_kw": total_kw,   # combined timestep average kW rate
             "elec_kw": elec_kw,
             "gas_kw": gas_kw,
         }

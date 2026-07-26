@@ -25,6 +25,9 @@ def create_synchronous_callback(api, db_path=DB_PATH):
         if not api.exchange.api_data_fully_ready(state):
             return
 
+        if api.exchange.warmup_flag(state):
+            return
+
         if not sensors.initialized:
             sensors.init_handles(state, api)
             actuators.init_handles(state, api)
@@ -76,9 +79,10 @@ def create_synchronous_callback(api, db_path=DB_PATH):
                 vent_flow=zone_data["iaq_vent_flow"],
                 heating_sp=sp["heating_c"],
                 cooling_sp=sp["cooling_c"],
-                hvac_kw=env["hvac_power_kw"],
+                hvac_elec_kw=env.get("elec_kw", 0.0),
                 outdoor_temp=env["outdoor_temp_c"],
                 solar=0.0,
+                hvac_gas_kw=env.get("gas_kw", 0.0),
                 db_path=db_path
             )
 

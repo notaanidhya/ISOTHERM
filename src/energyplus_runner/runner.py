@@ -1,5 +1,8 @@
 import sys
 import os
+EP_PATH = r"C:\EnergyPlusV26-1-0"
+if EP_PATH not in sys.path:
+    sys.path.insert(0, EP_PATH)
 from pyenergyplus.api import EnergyPlusAPI
 from src.config import PREPARED_IDF_PATH, WEATHER_PATH, DB_PATH, PROJECT_ROOT
 from src.energyplus_runner.callbacks import create_synchronous_callback

@@ -98,12 +98,12 @@ SizingPeriod:DesignDay,
     1;                        !- Sky Clearness
 
 RUNPERIOD,
-    Winter Representative Week,    !- Name
+    Winter Representative Day,    !- Name
     1,                        !- Begin Month
     15,                       !- Begin Day of Month
     ,                         !- Begin Year
     1,                        !- End Month
-    21,                       !- End Day of Month
+    15,                       !- End Day of Month
     ,                         !- End Year
     Sunday,                   !- Day of Week for Start Day
     No,                       !- Use Weather File Holidays and Special Days
@@ -115,12 +115,12 @@ RUNPERIOD,
     Hour24;                   !- First Hour Interpolation Starting Values
 
 RUNPERIOD,
-    Summer Representative Week,    !- Name
+    Summer Representative Day,    !- Name
     7,                        !- Begin Month
     1,                        !- Begin Day of Month
     ,                         !- Begin Year
     7,                        !- End Month
-    7,                        !- End Day of Month
+    1,                        !- End Day of Month
     ,                         !- End Year
     Sunday,                   !- Day of Week for Start Day
     No,                       !- Use Weather File Holidays and Special Days
@@ -530,10 +530,18 @@ SCHEDULE:COMPACT,
 SCHEDULE:COMPACT,
     Clothing-Sch,             !- Name
     Any Number,               !- Schedule Type Limits Name
-    Through: 12/31,           !- Field 1
+    Through: 4/30,            !- Field 1
     For: AllDays,             !- Field 2
     Until: 24:00,             !- Field 3
-    1;                        !- Field 4
+    1,                        !- Field 4
+    Through: 9/30,            !- Field 5
+    For: AllDays,             !- Field 6
+    Until: 24:00,             !- Field 7
+    0.5,                      !- Field 8
+    Through: 12/31,           !- Field 9
+    For: AllDays,             !- Field 10
+    Until: 24:00,             !- Field 11
+    1;                        !- Field 12
 
 SCHEDULE:COMPACT,
     Work-Eff-Sch,             !- Name
@@ -549,7 +557,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    21,                       !- Field 4
+    16.7,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     22.2,                     !- Field 7
@@ -573,7 +581,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    24,                       !- Field 4
+    23.9,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     29.4,                     !- Field 7
@@ -597,7 +605,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    21,                       !- Field 4
+    16.7,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     22.2,                     !- Field 7
@@ -621,7 +629,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    24,                       !- Field 4
+    23.9,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     29.4,                     !- Field 7
@@ -645,7 +653,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    21,                       !- Field 4
+    16.7,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     22.2,                     !- Field 7
@@ -669,7 +677,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    24,                       !- Field 4
+    23.9,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     29.4,                     !- Field 7
@@ -693,7 +701,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    21,                       !- Field 4
+    16.7,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     22.2,                     !- Field 7
@@ -717,7 +725,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    24,                       !- Field 4
+    23.9,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     29.4,                     !- Field 7
@@ -741,7 +749,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    21,                       !- Field 4
+    16.7,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     22.2,                     !- Field 7
@@ -765,7 +773,7 @@ Schedule:Compact,
     Through: 12/31,           !- Field 1
     For: SummerDesignDay,     !- Field 2
     Until: 24:00,             !- Field 3
-    24,                       !- Field 4
+    23.9,                     !- Field 4
     For: WinterDesignDay,     !- Field 5
     Until: 24:00,             !- Field 6
     29.4,                     !- Field 7

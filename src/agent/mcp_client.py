@@ -24,6 +24,50 @@ def convert_mcp_tool_to_ollama(mcp_tool) -> dict:
         }
     }
 
+def get_target_setpoints(is_summer: bool, is_occupied: bool, is_precon: bool, tou_tier_name: str) -> tuple[float, float, str, str]:
+    """
+    CANONICAL SINGLE SOURCE OF TRUTH for all HVAC setpoint decisions.
+    Returns: (heating_sp_c, cooling_sp_c, table_row_label, description)
+    """
+    if is_precon:
+        if is_summer:
+            return (16.0, 24.5, "PRE-CON | Any TOU", "precool without reheat")
+        else:
+            return (20.5, 25.0, "PRE-CON | Any TOU", "morning warmup")
+            
+    if not is_occupied:
+        return (16.0, 27.0, "UNOCCUPIED | Any TOU", "night setback")
+        
+    if is_summer:
+        # SUMMER (Cooling Dominant) — keep heating floor low (16.0°C) to eliminate VAV reheat waste!
+        if tou_tier_name == "Peak":
+            return (16.0, 26.0, "OCCUPIED | Peak", "load shed cooling, PMV ±0.8 OK")
+        elif tou_tier_name == "Off-Peak":
+            return (16.0, 23.5, "OCCUPIED | Off-Peak", "precool buffer")
+        else:
+            return (16.0, 24.5, "OCCUPIED | Mid-Peak", "balanced cooling")
+    else:
+        # WINTER (Heating Dominant)
+        if tou_tier_name == "Peak":
+            return (19.0, 25.5, "OCCUPIED | Peak", "load shed heating, PMV ±0.8 OK")
+        elif tou_tier_name == "Off-Peak":
+            return (21.5, 24.0, "OCCUPIED | Off-Peak", "comfort buffer")
+        else:
+            return (20.5, 25.0, "OCCUPIED | Mid-Peak", "balanced heating")
+
+def render_decision_table_markdown() -> str:
+    """Dynamically renders the DECISION TABLE for the LLM system prompt from get_target_setpoints."""
+    lines = ["DECISION TABLE — apply the matching row:"]
+    lines.append(" WINTER (Heating Dominant — Day < 152 or Day > 243):")
+    for precon, occ, tier in [(False, False, "Any"), (True, False, "Any"), (False, True, "Off-Peak"), (False, True, "Mid-Peak"), (False, True, "Peak")]:
+        h, c, row_lbl, desc = get_target_setpoints(False, occ, precon, tier)
+        lines.append(f"  {row_lbl:<20} → Heating {h:.1f}°C, Cooling {c:.1f}°C   ({desc})")
+    lines.append(" SUMMER (Cooling Dominant — Day 152 to 243):")
+    for precon, occ, tier in [(False, False, "Any"), (True, False, "Any"), (False, True, "Off-Peak"), (False, True, "Mid-Peak"), (False, True, "Peak")]:
+        h, c, row_lbl, desc = get_target_setpoints(True, occ, precon, tier)
+        lines.append(f"  {row_lbl:<20} → Heating {h:.1f}°C, Cooling {c:.1f}°C   ({desc})")
+    return "\n".join(lines)
+
 async def run_mcp_agent_turn_async(sim_time_hours: float, model: str = OLLAMA_MODEL, db_path: str = DB_PATH) -> dict:
     """Asynchronously connects to stdio MCP server, fetches tools, sends prompt to Ollama, and executes tool calls."""
     server_script = os.path.join(PROJECT_ROOT, "src", "mcp_server", "server.py")
@@ -62,44 +106,31 @@ async def run_mcp_agent_turn_async(sim_time_hours: float, model: str = OLLAMA_MO
 
             # ── TOU tier ─────────────────────────────────────────────────────
             if tou_price >= 0.15:
+                tou_tier_name = "Peak"
                 tou_tier     = "PEAK HIGH-COST ($0.15/kWh)"
-                tou_strategy = "CRITICAL LOAD SHEDDING: Heating ≤19°C, Cooling ≥25.5°C. Comfort may slip to PMV ±0.8."
+                tou_strategy = "CRITICAL LOAD SHEDDING: Minimize HVAC power while keeping PMV within ±0.8 (see Decision Table)."
             elif tou_price <= 0.05:
+                tou_tier_name = "Off-Peak"
                 tou_tier     = "OFF-PEAK CHEAP ($0.05/kWh)"
-                tou_strategy = "PRE-CONDITIONING BUFFER: Build thermal mass while power is cheap. Heating 21.5–22.5°C, Cooling 23–24°C."
+                tou_strategy = "PRE-CONDITIONING BUFFER: Build thermal mass while power is cheap without causing VAV reheat (see Decision Table)."
             else:
+                tou_tier_name = "Mid-Peak"
                 tou_tier     = "MID-PEAK STANDARD ($0.10/kWh)"
-                tou_strategy = "BALANCED: Heating 20–21°C, Cooling 24–25°C."
+                tou_strategy = "BALANCED COMFORT: Standard operation without reheat waste (see Decision Table)."
 
             # ── Occupancy mode ────────────────────────────────────────────────
             if is_precon:
                 occupancy_mode     = "PRE-CONDITIONING (07:00 — occupants arrive in 1 hour)"
-                occupancy_strategy = (
-                    "Bring all zones to comfort setpoints NOW using off-peak or mid-peak power. "
-                    "Target: zone_temp within 0.5°C of occupied targets before 08:00. "
-                    "Heating: 20–21°C, Cooling: 24–25°C."
-                )
+                occupancy_strategy = "Bring zones toward comfort targets without causing reheat waste (see Decision Table)."
             elif is_occupied:
                 occupancy_mode     = "OCCUPIED (08:00–18:00)"
-                occupancy_strategy = (
-                    "Building has occupants. Comfort target PMV ±0.5. "
-                    "Apply TOU strategy above — do not sacrifice comfort unless PEAK tier."
-                )
+                occupancy_strategy = "Building has occupants. Target comfortable temperatures according to season and TOU tier (see Decision Table)."
             else:
                 occupancy_mode     = "UNOCCUPIED (18:00–08:00)"
-                occupancy_strategy = (
-                    "Building is EMPTY. Zero comfort obligation. "
-                    "Apply NIGHT SETBACK to minimise indoor–outdoor delta-T and total kWh:\n"
-                    f"  {'Winter' if not is_summer else 'Summer'} → Heating: 16–17°C, Cooling: 27°C\n"
-                    "This is the primary mechanism for real energy savings — lower delta-T = less heat loss. "
-                    "Do NOT maintain comfortable temperatures for empty offices."
-                )
+                occupancy_strategy = "Building is EMPTY. Zero comfort obligation. Apply night setback (see Decision Table) to minimize indoor-outdoor delta-T."
 
-            # ── Fallback setpoints respect occupancy ──────────────────────────
-            if is_occupied or is_precon:
-                fallback_htg, fallback_clg = 21.0, 24.0
-            else:
-                fallback_htg, fallback_clg = 17.0, 27.0  # setback fallback
+            # ── Canonical setpoint lookup for current turn (SINGLE SOURCE OF TRUTH) ──
+            curr_htg, curr_clg, curr_row_lbl, curr_desc = get_target_setpoints(is_summer, is_occupied, is_precon, tou_tier_name)
 
             # ── Phase 3A: Pre-fetch trend history and inject into prompt ──────
             # Fetch last 3 hours of sensor history directly — more reliable than
@@ -110,13 +141,22 @@ async def run_mcp_agent_turn_async(sim_time_hours: float, model: str = OLLAMA_MO
                     "get_recent_history_tool",
                     {"hours": 3, "db_path": db_path}
                 )
-                raw = str(history_result)
-                # Extract the JSON text from the MCP TextContent wrapper
-                if "text=" in raw:
-                    start = raw.find("text='") + 6
-                    end   = raw.rfind("'")
-                    raw   = raw[start:end] if start > 6 else raw
-                history_data = json.loads(raw.replace("'", '"').replace("True", "true").replace("False", "false").replace("None", "null"))
+                raw = ""
+                if hasattr(history_result, "content") and history_result.content:
+                    for item in history_result.content:
+                        if getattr(item, "type", "") == "text" and hasattr(item, "text"):
+                            raw = item.text
+                            break
+                        elif hasattr(item, "text"):
+                            raw = item.text
+                            break
+                if not raw:
+                    raw = str(history_result)
+                    if "text=" in raw:
+                        start = raw.find("text='") + 6
+                        end   = raw.rfind("'")
+                        raw   = raw[start:end] if start > 6 else raw
+                history_data = json.loads(raw)
                 if history_data and isinstance(history_data, list):
                     # Summarise: last known avg temp and PMV per zone
                     zone_summary = {}
@@ -154,22 +194,22 @@ OCCUPANCY STRATEGY (HIGHEST PRIORITY AFTER SAFETY):
 TOU ENERGY STRATEGY:
 {tou_strategy}
 
-DECISION TABLE — apply the matching row:
- UNOCCUPIED  | Any TOU    → Heating 16-17°C,  Cooling 27°C          (night setback)
- PRE-CON     | Any TOU    → Heating 20-21°C,  Cooling 24-25°C       (ramp up early)
- OCCUPIED    | Off-Peak   → Heating 21.5-22°C, Cooling 23-24°C      (pre-condition)
- OCCUPIED    | Mid-Peak   → Heating 20-21°C,  Cooling 24-25°C       (balanced)
- OCCUPIED    | Peak       → Heating ≤19°C,    Cooling ≥25.5°C       (load shed, PMV ±0.8 OK)
+{render_decision_table_markdown()}
+
+CURRENT RECOMMENDED DECISION TABLE ROW FOR THIS TURN:
+  {curr_row_lbl} → Heating {curr_htg:.1f}°C, Cooling {curr_clg:.1f}°C ({curr_desc})
 
 HARD CONSTRAINTS:
 - Zone temperatures must stay between 16°C and 30°C at all times.
 - Cooling setpoint ≥ Heating setpoint + 2.0°C (deadband — mandatory).
 - Heating range: 16.0–24.0°C  |  Cooling range: 22.0–30.0°C
 
-TOOL CALL SEQUENCE:
-1. get_building_state      — read current temps, PMV, IAQ flow (zone_iaq_vent_flow), HVAC power
-2. set_all_setpoints       — apply the correct row from the decision table above for all 5 zones
-3. log_decision_tool       — MANDATORY: record your reasoning every turn (cite row applied, any trend observed, and why)
+TOOL CALL SEQUENCE (CRITICAL RULES):
+1. get_building_state      — read current temps, PMV, IAQ flow (zone_iaq_vent_flow), HVAC power.
+2. set_all_setpoints       — MUST ONLY take 'setpoints' parameter (list of [{{'zone_name': '...', 'heating_c': X, 'cooling_c': Y}}]). NEVER pass 'reasoning' or 'action' strings to set_all_setpoints!
+3. log_decision_tool       — MANDATORY every turn. MUST ONLY take 'reasoning' and 'action' parameters. NEVER pass setpoint lists to log_decision_tool!
+
+CRITICAL INSTRUCTION: Always make formal structured tool calls using your tool API. NEVER output raw markdown JSON strings like "```json ... ```" or text descriptions as a fallback.
 
 IAQ VENTILATION (automatic, but you can monitor):
 - Ventilation is automatically set to 80% during occupied hours and 10% during unoccupied hours.
@@ -199,19 +239,20 @@ IAQ VENTILATION (automatic, but you can monitor):
             msg        = response.get("message", {})
             tool_calls = msg.get("tool_calls", [])
 
-            # Fallback — model didn't emit tool_calls; apply occupancy-aware defaults
+            # Fallback — model didn't emit tool_calls; apply canonical table defaults
             if not tool_calls:
                 content = msg.get("content", "")
                 print(f"LLM Response text (no tool calls): {content[:150]}...")
 
+                fb_htg, fb_clg, fb_lbl, fb_desc = get_target_setpoints(is_summer, is_occupied, is_precon, tou_tier_name)
                 default_setpoints = [
-                    {"zone_name": z, "heating_c": fallback_htg, "cooling_c": fallback_clg}
+                    {"zone_name": z, "heating_c": fb_htg, "cooling_c": fb_clg}
                     for z in ["SPACE1-1", "SPACE2-1", "SPACE3-1", "SPACE4-1", "SPACE5-1"]
                 ]
                 await session.call_tool("set_all_setpoints", {"setpoints": default_setpoints, "db_path": db_path})
                 await session.call_tool("log_decision_tool", {
                     "sim_time_hours": sim_time_hours,
-                    "reasoning": content or f"Fallback: {occupancy_mode} defaults applied",
+                    "reasoning": content or f"Fallback ({fb_lbl}): {fb_desc}",
                     "action": json.dumps(default_setpoints),
                     "db_path": db_path
                 })
@@ -285,16 +326,21 @@ def execute_agent_turn_sync(sim_time_hours: float, model: str = OLLAMA_MODEL, db
         return asyncio.run(run_mcp_agent_turn_async(sim_time_hours, model, db_path))
     except Exception as e:
         print(f"Error in execute_agent_turn_sync: {e}")
-        # Occupancy-aware error fallback
+        # Canonical table error fallback
         hour_of_day   = int(sim_time_hours) % 24
-        is_unoccupied = not (OCCUPIED_HOURS[0] <= hour_of_day < OCCUPIED_HOURS[1])
-        fb_htg = 17.0 if is_unoccupied else 21.0
-        fb_clg = 27.0 if is_unoccupied else 24.0
+        day_of_year   = int(sim_time_hours / 24) % 365
+        is_summer     = 152 <= day_of_year <= 243
+        is_occupied   = OCCUPIED_HOURS[0] <= hour_of_day < OCCUPIED_HOURS[1]
+        is_precon     = (hour_of_day == OCCUPIED_HOURS[0] - 1)
+        tou_price     = get_tou_price(hour_of_day)
+        tou_tier_name = "Peak" if tou_price >= 0.15 else ("Off-Peak" if tou_price <= 0.05 else "Mid-Peak")
+        
+        fb_htg, fb_clg, fb_lbl, fb_desc = get_target_setpoints(is_summer, is_occupied, is_precon, tou_tier_name)
         for z in ["SPACE1-1", "SPACE2-1", "SPACE3-1", "SPACE4-1", "SPACE5-1"]:
             insert_action(z, fb_htg, fb_clg, db_path=db_path)
         insert_decision(
             sim_time_hours, {},
-            f"Error fallback ({'UNOCCUPIED setback' if is_unoccupied else 'OCCUPIED defaults'}): {e}",
+            f"Error fallback ({fb_lbl} -> {fb_desc}): {e}",
             [{"zone": z, "heating_c": fb_htg, "cooling_c": fb_clg} for z in ["SPACE1-1", "SPACE2-1", "SPACE3-1", "SPACE4-1", "SPACE5-1"]],
             db_path=db_path
         )

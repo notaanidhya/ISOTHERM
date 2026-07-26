@@ -37,3 +37,15 @@ def calculate_hourly_carbon(kwh: float, hour_of_day: int) -> float:
     """Calculates carbon emissions (kg CO2) for a given kWh consumption at a specific hour."""
     # gCO2 -> kgCO2 (divide by 1000)
     return (float(kwh) * get_carbon_intensity(hour_of_day)) / 1000.0
+
+# Natural Gas Commercial Benchmarks
+GAS_PRICE_USD_PER_KWH = 0.04           # ~$1.17 / therm commercial benchmark
+GAS_CARBON_INTENSITY_G_PER_KWH = 181.0  # ~53.06 kgCO2 / MMBtu EPA standard combustion factor
+
+def calculate_gas_cost(kwh_thermal: float) -> float:
+    """Calculates natural gas cost ($) for a given thermal kWh consumption."""
+    return float(kwh_thermal) * GAS_PRICE_USD_PER_KWH
+
+def calculate_gas_carbon(kwh_thermal: float) -> float:
+    """Calculates natural gas carbon emissions (kg CO2) for a given thermal kWh consumption."""
+    return (float(kwh_thermal) * GAS_CARBON_INTENSITY_G_PER_KWH) / 1000.0

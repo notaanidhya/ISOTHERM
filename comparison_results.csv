@@ -1,9 +1,13 @@
 Metric,Baseline,AI Optimized,Delta,Change (%)
-Total HVAC Energy (kWh),0.65,2.45,-1.80,-276.0%
-Unoccupied Energy (kWh),0.65,1.59,-0.94,-143.9%
-Electricity Cost ($ USD),$0.03,$0.22,$-0.18,-562.0%
-Peak Demand (kW),0.36,0.69,-0.33,-93.8%
-Carbon Emissions (kg CO2),0.21,0.94,-0.73,-351.5%
-Occupied Comfort PMV Compliance (%),49.3%,49.6%,+0.3pp,N/A
-Peak-Hour Comfort Compliance (%),48.7%,49.1%,+0.4pp,N/A
+Total Combined Energy (kWh),24.69,73.57,-48.88,-198.0%
+  - Electricity Energy (kWh),9.03,9.03,+0.00,+0.0%
+  - Natural Gas Energy (kWh thermal),15.66,64.54,-48.88,-312.2%
+Total Combined Cost ($ USD),$1.45,$3.41,$-1.96,-134.4%
+  - Electricity Cost ($ USD),$0.83,$0.83,$+0.00,+0.0%
+  - Natural Gas Cost ($ USD),$0.63,$2.58,$-1.96,-312.2%
+Unoccupied Energy (kWh),17.55,27.58,-10.04,-57.2%
+Peak Demand (kW),2.99,19.46,-16.47,-550.9%
+Carbon Emissions (kg CO2),6.37,15.22,-8.85,-138.9%
+Occupied Comfort PMV Compliance (%),23.4%,24.5%,+1.1pp,N/A
+Peak-Hour Comfort Compliance (%),27.1%,28.6%,+1.4pp,N/A
 IAQ Flow Monitored (%) [Schedule-driven],0.0%,0.0%,+0.0pp,N/A

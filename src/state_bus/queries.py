@@ -3,15 +3,15 @@ import datetime
 from src.state_bus.db import get_connection, _db_lock, DB_PATH
 from src.config import ZONES
 
-def insert_state_log(sim_time_hours, zone_name, temp_c, pmv, vent_flow, heating_sp, cooling_sp, hvac_kw, outdoor_temp, solar, db_path=DB_PATH):
+def insert_state_log(sim_time_hours, zone_name, temp_c, pmv, vent_flow, heating_sp, cooling_sp, hvac_elec_kw, outdoor_temp, solar, hvac_gas_kw=0.0, db_path=DB_PATH):
     wall_time = datetime.datetime.now().isoformat()
     with _db_lock:
         with get_connection(db_path) as conn:
             conn.execute("""
             INSERT INTO state_log 
-            (sim_time_hours, wall_time, zone_name, zone_temp_c, zone_pmv, zone_iaq_vent_flow, heating_sp_c, cooling_sp_c, hvac_elec_kw, outdoor_temp_c, solar_irradiance)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (sim_time_hours, wall_time, zone_name, temp_c, pmv, vent_flow, heating_sp, cooling_sp, hvac_kw, outdoor_temp, solar))
+            (sim_time_hours, wall_time, zone_name, zone_temp_c, zone_pmv, zone_iaq_vent_flow, heating_sp_c, cooling_sp_c, hvac_elec_kw, hvac_gas_kw, outdoor_temp_c, solar_irradiance)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (sim_time_hours, wall_time, zone_name, temp_c, pmv, vent_flow, heating_sp, cooling_sp, hvac_elec_kw, hvac_gas_kw, outdoor_temp, solar))
             conn.commit()
 
 def insert_action(zone_name, heating_sp_c, cooling_sp_c, db_path=DB_PATH):
@@ -57,7 +57,7 @@ def get_recent_history(hours=4, db_path=DB_PATH):
             current_time = latest_row["sim_time_hours"]
             min_time = max(0.0, current_time - hours)
             rows = conn.execute("""
-            SELECT zone_name, CAST(sim_time_hours AS INT) as hour, AVG(zone_temp_c) as avg_temp, AVG(zone_pmv) as avg_pmv, AVG(zone_iaq_vent_flow) as avg_iaq, AVG(hvac_elec_kw) as avg_hvac_kw, AVG(outdoor_temp_c) as avg_outdoor
+            SELECT zone_name, CAST(sim_time_hours AS INT) as hour, AVG(zone_temp_c) as avg_temp, AVG(zone_pmv) as avg_pmv, AVG(zone_iaq_vent_flow) as avg_iaq, AVG(hvac_elec_kw) as avg_elec_kw, AVG(COALESCE(hvac_gas_kw, 0.0)) as avg_gas_kw, AVG(hvac_elec_kw + COALESCE(hvac_gas_kw, 0.0)) as avg_hvac_kw, AVG(outdoor_temp_c) as avg_outdoor
             FROM state_log
             WHERE sim_time_hours >= ?
             GROUP BY zone_name, hour

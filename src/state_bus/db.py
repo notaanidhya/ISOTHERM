@@ -37,10 +37,15 @@ def init_db(db_path=DB_PATH, reset=False):
                 heating_sp_c REAL,
                 cooling_sp_c REAL,
                 hvac_elec_kw REAL,
+                hvac_gas_kw REAL DEFAULT 0.0,
                 outdoor_temp_c REAL,
                 solar_irradiance REAL
             );
             """)
+            try:
+                cursor.execute("ALTER TABLE state_log ADD COLUMN hvac_gas_kw REAL DEFAULT 0.0")
+            except Exception:
+                pass
             
             # Table 2: Action queue (written by LLM / MCP tool, consumed by EnergyPlus callback)
             cursor.execute("""

@@ -40,6 +40,9 @@ def run_baseline():
         if not api.exchange.api_data_fully_ready(state_arg):
             return
 
+        if api.exchange.warmup_flag(state_arg):
+            return
+
         if not sensors.initialized:
             sensors.init_handles(state_arg, api)
 
@@ -59,9 +62,10 @@ def run_baseline():
                 vent_flow=zone_data["iaq_vent_flow"],
                 heating_sp=20.0,
                 cooling_sp=24.0,
-                hvac_kw=env["hvac_power_kw"],
+                hvac_elec_kw=env.get("elec_kw", 0.0),
                 outdoor_temp=env["outdoor_temp_c"],
                 solar=0.0,
+                hvac_gas_kw=env.get("gas_kw", 0.0),
                 db_path=BASELINE_DB_PATH
             )
 

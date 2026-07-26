@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.26 11:22
+Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.26 15:19
 ! <Version>, Version ID
  Version, 26.1
 ! <Timesteps per Hour>, #TimeSteps, Minutes per TimeStep {minutes}
@@ -808,12 +808,12 @@ Environment:WarmupDays,  6
 ! <Tabular Report>,Style,Unit Conversion, Format Reals
 Tabular Report,HTML,None,Yes
 ! <Warmup Convergence Information>,Zone Name,Environment Type/Name,Average Warmup Temperature Difference {deltaC},Std Dev Warmup Temperature Difference {deltaC},Max Temperature Pass/Fail Convergence,Min Temperature Pass/Fail Convergence,Average Warmup Load Difference {W},Std Dev Warmup Load Difference {W},Heating Load Pass/Fail Convergence,Cooling Load Pass/Fail Convergence
- Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE DAY,6.5095146683E-002,4.0048376164E-002,Pass,Pass,2.1536444446E-002,1.3811536292E-002,Pass,Pass
- Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE DAY,3.9566670821E-002,8.5806469722E-002,Pass,Pass,0.1007821329,0.2638746556,Pass,Pass
- Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE DAY,3.8248060955E-002,8.2337457355E-002,Pass,Pass,0.1408609143,0.4796012494,Pass,Pass
- Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE DAY,1.3312551784E-003,8.7336437720E-004,Pass,Pass,2.2650291552E-002,1.8829588651E-002,Pass,Pass
- Warmup Convergence Information,SPACE4-1,RunPeriod: WINTER REPRESENTATIVE DAY,1.5560535980E-003,1.1379726978E-003,Pass,Pass,3.5667566496E-002,3.6036337000E-002,Pass,Pass
- Warmup Convergence Information,SPACE5-1,RunPeriod: WINTER REPRESENTATIVE DAY,4.8758258222E-004,3.3134252828E-004,Pass,Pass,4.6060401003E-002,4.0982933150E-002,Pass,Pass
+ Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE DAY,9.9379382032E-002,6.6540779559E-002,Pass,Pass,3.6424283571E-002,4.3917628508E-002,Pass,Pass
+ Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE DAY,0.1114109049,0.2739515376,Pass,Pass,0.5084551583,1.8100130500,Pass,Pass
+ Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE DAY,0.1039728430,0.2897586840,Pass,Pass,0.2685634185,0.6486994927,Pass,Pass
+ Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE DAY,7.6620672848E-002,0.2766624401,Pass,Pass,0.6701860932,2.8035892953,Pass,Pass
+ Warmup Convergence Information,SPACE4-1,RunPeriod: WINTER REPRESENTATIVE DAY,8.1313608860E-002,0.3020764338,Pass,Pass,0.2469691268,0.7515250118,Pass,Pass
+ Warmup Convergence Information,SPACE5-1,RunPeriod: WINTER REPRESENTATIVE DAY,4.9291864249E-002,0.1465764361,Pass,Pass,0.1083991048,0.5167381700,Pass,Pass
 Environment,SUMMER REPRESENTATIVE DAY,WeatherFileRunPeriod,07/01/2007,07/01/2007,Sunday,1,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
 Environment:Daylight Saving,No,RunPeriod Object
 Environment:WarmupDays,  6

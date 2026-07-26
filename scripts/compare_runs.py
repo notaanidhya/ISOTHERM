@@ -16,14 +16,14 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.config import DB_PATH, BASELINE_DB_PATH
-from src.utils.carbon import get_tou_price, get_carbon_intensity
+from src.utils.carbon import get_tou_price, get_carbon_intensity, calculate_gas_cost, calculate_gas_carbon
 
 def analyze_db(db_path):
     if not os.path.exists(db_path):
         return None
     conn = sqlite3.connect(db_path)
     df = pd.read_sql_query(
-        "SELECT sim_time_hours, zone_name, zone_temp_c, zone_pmv, zone_iaq_vent_flow, hvac_elec_kw, outdoor_temp_c FROM state_log",
+        "SELECT sim_time_hours, zone_name, zone_temp_c, zone_pmv, zone_iaq_vent_flow, hvac_elec_kw, COALESCE(hvac_gas_kw, 0.0) as hvac_gas_kw, outdoor_temp_c FROM state_log",
         conn
     )
     conn.close()
@@ -40,14 +40,31 @@ def analyze_db(db_path):
 
     # Convert average kW per timestep (15 min = 0.25 hours) to kWh per zone row
     # Divide by n_zones to get actual whole-building total kWh, cost, and carbon
-    df['kwh_row'] = df['hvac_elec_kw'] * 0.25
-    df['cost_row'] = df['kwh_row'] * df['tou_price']
-    df['carbon_row'] = (df['kwh_row'] * df['carbon_g']) / 1000.0
+    df['elec_kwh_row'] = df['hvac_elec_kw'] * 0.25
+    df['elec_cost_row'] = df['elec_kwh_row'] * df['tou_price']
+    df['elec_carbon_row'] = (df['elec_kwh_row'] * df['carbon_g']) / 1000.0
+
+    df['gas_kwh_row'] = df['hvac_gas_kw'] * 0.25
+    df['gas_cost_row'] = df['gas_kwh_row'].apply(calculate_gas_cost)
+    df['gas_carbon_row'] = df['gas_kwh_row'].apply(calculate_gas_carbon)
+
+    df['kwh_row'] = df['elec_kwh_row'] + df['gas_kwh_row']
+    df['cost_row'] = df['elec_cost_row'] + df['gas_cost_row']
+    df['carbon_row'] = df['elec_carbon_row'] + df['gas_carbon_row']
 
     total_kwh = float(df['kwh_row'].sum()) / n_zones
+    elec_kwh  = float(df['elec_kwh_row'].sum()) / n_zones
+    gas_kwh   = float(df['gas_kwh_row'].sum()) / n_zones
+
     total_cost_usd = float(df['cost_row'].sum()) / n_zones
+    elec_cost_usd  = float(df['elec_cost_row'].sum()) / n_zones
+    gas_cost_usd   = float(df['gas_cost_row'].sum()) / n_zones
+
     total_carbon_kg = float(df['carbon_row'].sum()) / n_zones
-    peak_kw = float(df['hvac_elec_kw'].max())
+    elec_carbon_kg  = float(df['elec_carbon_row'].sum()) / n_zones
+    gas_carbon_kg   = float(df['gas_carbon_row'].sum()) / n_zones
+
+    peak_kw = float((df['hvac_elec_kw'] + df['hvac_gas_kw']).max())
 
     # Occupied (08:00-18:00) vs Unoccupied (18:00-08:00) Energy Split
     df['is_occupied'] = (df['hour'] >= 8) & (df['hour'] <= 18)
@@ -104,8 +121,14 @@ def analyze_db(db_path):
 
     return {
         "total_kwh": total_kwh,
+        "elec_kwh": elec_kwh,
+        "gas_kwh": gas_kwh,
         "total_cost_usd": total_cost_usd,
+        "elec_cost_usd": elec_cost_usd,
+        "gas_cost_usd": gas_cost_usd,
         "total_carbon_kg": total_carbon_kg,
+        "elec_carbon_kg": elec_carbon_kg,
+        "gas_carbon_kg": gas_carbon_kg,
         "peak_kw": peak_kw,
         "occupied_kwh": occ_kwh,
         "unoccupied_kwh": unocc_kwh,
@@ -137,8 +160,20 @@ def main():
     kwh_saved     = base["total_kwh"] - ai["total_kwh"]
     kwh_saved_pct = (kwh_saved / base["total_kwh"]) * 100.0 if base["total_kwh"] > 0 else 0.0
 
+    elec_kwh_saved     = base["elec_kwh"] - ai["elec_kwh"]
+    elec_kwh_saved_pct = (elec_kwh_saved / base["elec_kwh"]) * 100.0 if base["elec_kwh"] > 0 else 0.0
+
+    gas_kwh_saved     = base["gas_kwh"] - ai["gas_kwh"]
+    gas_kwh_saved_pct = (gas_kwh_saved / base["gas_kwh"]) * 100.0 if base["gas_kwh"] > 0 else 0.0
+
     cost_saved     = base["total_cost_usd"] - ai["total_cost_usd"]
     cost_saved_pct = (cost_saved / base["total_cost_usd"]) * 100.0 if base["total_cost_usd"] > 0 else 0.0
+
+    elec_cost_saved     = base["elec_cost_usd"] - ai["elec_cost_usd"]
+    elec_cost_saved_pct = (elec_cost_saved / base["elec_cost_usd"]) * 100.0 if base["elec_cost_usd"] > 0 else 0.0
+
+    gas_cost_saved     = base["gas_cost_usd"] - ai["gas_cost_usd"]
+    gas_cost_saved_pct = (gas_cost_saved / base["gas_cost_usd"]) * 100.0 if base["gas_cost_usd"] > 0 else 0.0
 
     peak_shaved     = base["peak_kw"] - ai["peak_kw"]
     peak_shaved_pct = (peak_shaved / base["peak_kw"]) * 100.0 if base["peak_kw"] > 0 else 0.0
@@ -155,8 +190,14 @@ def main():
         "savings": {
             "energy_kwh_saved": kwh_saved,
             "energy_savings_pct": kwh_saved_pct,
+            "elec_kwh_saved": elec_kwh_saved,
+            "elec_savings_pct": elec_kwh_saved_pct,
+            "gas_kwh_saved": gas_kwh_saved,
+            "gas_savings_pct": gas_kwh_saved_pct,
             "cost_usd_saved": cost_saved,
             "cost_savings_pct": cost_saved_pct,
+            "elec_cost_usd_saved": elec_cost_saved,
+            "gas_cost_usd_saved": gas_cost_saved,
             "peak_kw_reduced": peak_shaved,
             "peak_reduction_pct": peak_shaved_pct,
             "carbon_kg_saved": carbon_saved,
@@ -174,11 +215,46 @@ def main():
 
     rows = [
         {
-            "Metric": "Total HVAC Energy (kWh)",
+            "Metric": "Total Combined Energy (kWh)",
             "Baseline": f"{base['total_kwh']:.2f}",
             "AI Optimized": f"{ai['total_kwh']:.2f}",
             "Delta": f"{kwh_saved:+.2f}",
             "Change (%)": f"{kwh_saved_pct:+.1f}%"
+        },
+        {
+            "Metric": "  - Electricity Energy (kWh)",
+            "Baseline": f"{base['elec_kwh']:.2f}",
+            "AI Optimized": f"{ai['elec_kwh']:.2f}",
+            "Delta": f"{elec_kwh_saved:+.2f}",
+            "Change (%)": f"{elec_kwh_saved_pct:+.1f}%"
+        },
+        {
+            "Metric": "  - Natural Gas Energy (kWh thermal)",
+            "Baseline": f"{base['gas_kwh']:.2f}",
+            "AI Optimized": f"{ai['gas_kwh']:.2f}",
+            "Delta": f"{gas_kwh_saved:+.2f}",
+            "Change (%)": f"{gas_kwh_saved_pct:+.1f}%"
+        },
+        {
+            "Metric": "Total Combined Cost ($ USD)",
+            "Baseline": f"${base['total_cost_usd']:.2f}",
+            "AI Optimized": f"${ai['total_cost_usd']:.2f}",
+            "Delta": f"${cost_saved:+.2f}",
+            "Change (%)": f"{cost_saved_pct:+.1f}%"
+        },
+        {
+            "Metric": "  - Electricity Cost ($ USD)",
+            "Baseline": f"${base['elec_cost_usd']:.2f}",
+            "AI Optimized": f"${ai['elec_cost_usd']:.2f}",
+            "Delta": f"${elec_cost_saved:+.2f}",
+            "Change (%)": f"{elec_cost_saved_pct:+.1f}%"
+        },
+        {
+            "Metric": "  - Natural Gas Cost ($ USD)",
+            "Baseline": f"${base['gas_cost_usd']:.2f}",
+            "AI Optimized": f"${ai['gas_cost_usd']:.2f}",
+            "Delta": f"${gas_cost_saved:+.2f}",
+            "Change (%)": f"{gas_cost_saved_pct:+.1f}%"
         },
         {
             "Metric": "Unoccupied Energy (kWh)",
@@ -186,13 +262,6 @@ def main():
             "AI Optimized": f"{ai['unoccupied_kwh']:.2f}",
             "Delta": f"{unocc_kwh_saved:+.2f}",
             "Change (%)": f"{unocc_kwh_saved_pct:+.1f}%"
-        },
-        {
-            "Metric": "Electricity Cost ($ USD)",
-            "Baseline": f"${base['total_cost_usd']:.2f}",
-            "AI Optimized": f"${ai['total_cost_usd']:.2f}",
-            "Delta": f"${cost_saved:+.2f}",
-            "Change (%)": f"{cost_saved_pct:+.1f}%"
         },
         {
             "Metric": "Peak Demand (kW)",
@@ -241,11 +310,11 @@ def main():
     print("=========================================================")
     print("📈 HEADLINE METRICS COMPARISON")
     print("=========================================================")
-    print(f"💰 Energy Cost Savings:  ${cost_saved:+.2f} ({cost_saved_pct:+.1f}%)")
-    print(f"⚡ Total HVAC Energy:    {kwh_saved:+.2f} kWh ({kwh_saved_pct:+.1f}%)")
+    print(f"💰 Total Cost Savings:   ${cost_saved:+.2f} ({cost_saved_pct:+.1f}%) [Elec: ${elec_cost_saved:+.2f} | Gas: ${gas_cost_saved:+.2f}]")
+    print(f"⚡ Combined Energy:      {kwh_saved:+.2f} kWh ({kwh_saved_pct:+.1f}%) [Elec: {elec_kwh_saved:+.2f} kWh | Gas: {gas_kwh_saved:+.2f} kWh]")
     print(f"🌙 Unoccupied Energy:    {unocc_kwh_saved:+.2f} kWh ({unocc_kwh_saved_pct:+.1f}%)")
     print(f"📉 Peak Demand Shaved:   {peak_shaved:+.2f} kW ({peak_shaved_pct:+.1f}%)")
-    print(f"🌿 Carbon Avoided:      {carbon_saved:+.2f} kg CO2 ({carbon_saved_pct:+.1f}%)")
+    print(f"🌿 Carbon Avoided:       {carbon_saved:+.2f} kg CO2 ({carbon_saved_pct:+.1f}%)")
     print(f"😊 Occupied Comfort:     {base['comfort_compliance_pct']:.1f}% → {ai['comfort_compliance_pct']:.1f}% ({ai['comfort_compliance_pct'] - base['comfort_compliance_pct']:+.1f}pp)")
     print(f"🔥 Peak-Hour Comfort:    {base['peak_tou_comfort_pct']:.1f}% → {ai['peak_tou_comfort_pct']:.1f}% ({ai['peak_tou_comfort_pct'] - base['peak_tou_comfort_pct']:+.1f}pp)")
     print("=========================================================")
