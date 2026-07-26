@@ -23,29 +23,84 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling (Clean Streamlit Theme with Accent Colors)
+# Custom Styling (Minimalist Luxury SaaS Aesthetic: Linear / Vercel)
 st.markdown("""
 <style>
+    /* Hero KPI Card Container */
     .metric-card {
-        background-color: #1E222D;
-        border: 1px solid #2E3440;
-        border-radius: 10px;
-        padding: 18px;
+        background: linear-gradient(180deg, #151B28 0%, #111622 100%);
+        border: 1px solid #1E2638;
+        border-radius: 14px;
+        padding: 22px 18px;
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease-in-out;
     }
-    .metric-title { font-size: 14px; color: #8892B0; margin-bottom: 6px; font-weight: 500; }
-    .metric-value { font-size: 26px; font-weight: 700; color: #00E676; }
-    .metric-delta { font-size: 13px; color: #CCD6F6; margin-top: 4px; }
+    .metric-card:hover {
+        border-color: #10B981;
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.15);
+    }
+    .metric-title {
+        font-size: 13px;
+        color: #94A3B8;
+        margin-bottom: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .metric-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #10B981;
+        letter-spacing: -0.5px;
+    }
+    .metric-delta {
+        font-size: 13px;
+        color: #CCD6F6;
+        margin-top: 6px;
+        font-weight: 400;
+    }
+    
+    /* Linear-Style Callout Boxes */
     .callout-box {
-        background-color: #1A1D24;
-        border-left: 4px solid #FFB300;
-        padding: 15px 20px;
-        border-radius: 0 8px 8px 0;
-        margin: 15px 0;
+        background-color: #121722;
+        border-left: 3px solid #F59E0B;
+        padding: 18px 22px;
+        border-radius: 0 10px 10px 0;
+        margin: 18px 0;
+        border-top: 1px solid #1E2638;
+        border-right: 1px solid #1E2638;
+        border-bottom: 1px solid #1E2638;
     }
-    .callout-title { font-weight: 700; color: #FFB300; font-size: 16px; margin-bottom: 8px; }
-    .callout-text { color: #CCD6F6; font-size: 14px; line-height: 1.5; }
+    .callout-title {
+        font-weight: 700;
+        color: #F59E0B;
+        font-size: 15px;
+        margin-bottom: 10px;
+        letter-spacing: 0.2px;
+    }
+    .callout-text {
+        color: #CCD6F6;
+        font-size: 13.5px;
+        line-height: 1.6;
+    }
+    
+    /* Clean Tab Styling overrides */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 24px;
+        border-bottom: 1px solid #1E2638;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 48px;
+        color: #94A3B8;
+        font-weight: 500;
+        font-size: 15px;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #10B981;
+        font-weight: 600;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -83,6 +138,30 @@ def load_decisions_data(db_path):
     conn.close()
     return df
 
+def apply_minimalist_layout(fig, title_text, xaxis_text, yaxis_text, height=450):
+    fig.update_layout(
+        template="plotly_dark",
+        title=dict(text=f"<b>{title_text}</b>", font=dict(size=16, color="#F8FAFC", family="sans serif")),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="sans serif", color="#CCD6F6", size=12),
+        xaxis_title=xaxis_text,
+        yaxis_title=yaxis_text,
+        height=height,
+        margin=dict(l=50, r=50, t=60, b=50),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="rgba(0,0,0,0)"
+        )
+    )
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor="#1A202E", zerolinecolor="#262E42")
+    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="#1A202E", zerolinecolor="#262E42")
+    return fig
+
 # Load Datasets
 df_base = load_simulation_data(BASELINE_DB_PATH)
 df_ai = load_simulation_data(DB_PATH)
@@ -95,7 +174,7 @@ if df_base.empty or df_ai.empty:
 # ---------------------------------------------------------
 # SIDEBAR CONTROLS
 # ---------------------------------------------------------
-st.sidebar.title("⚙️ Dashboard Controls")
+st.sidebar.title("⚡ Dashboard Controls")
 st.sidebar.markdown("---")
 
 season_filter = st.sidebar.radio(
@@ -126,7 +205,7 @@ else:
 # HERO HEADER & KPI SCORECARD
 # ---------------------------------------------------------
 st.title("⚡ Honeywell Autonomous BMS — Physical AI Closed-Loop Operations")
-st.markdown("### Quantitative Energy, Demand Shaving & Thermal Comfort Dashboard")
+st.markdown("#### Quantitative Energy, Demand Shaving & Thermal Comfort Dashboard")
 st.markdown("---")
 
 # Compute Whole-Building Summary KPIs (Divide sum by n_zones = 5 to get actual facility total)
@@ -281,33 +360,26 @@ with tab1:
 with tab2:
     st.subheader("⚡ HVAC Power Demand vs. Time-of-Use (TOU) Electricity Rate")
     
-    # Prepare plotting x-axis
     x_col = 'hour_of_day' if view_mode.startswith("24-Hour") else 'sim_time_hours'
     x_label = "Time of Day (Hours)" if view_mode.startswith("24-Hour") else "Simulation Elapsed Time (Hours)"
     
-    # Resample by mean across 5 zones per timestep
     df_b_plot = df_b_filt.groupby(['sim_time_hours', 'hour_of_day']).agg({'hvac_elec_kw': 'mean', 'hvac_gas_kw': 'mean', 'tou_price': 'first'}).reset_index()
     df_a_plot = df_a_filt.groupby(['sim_time_hours', 'hour_of_day']).agg({'hvac_elec_kw': 'mean', 'hvac_gas_kw': 'mean', 'tou_price': 'first'}).reset_index()
     
     fig_power = make_subplots(specs=[[{"secondary_y": True}]])
+    fig_power.add_trace(go.Scatter(x=df_b_plot[x_col], y=df_b_plot['hvac_elec_kw'], name="Baseline Elec (kW)", line=dict(color="#F43F5E", width=1.5)), secondary_y=False)
+    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['hvac_elec_kw'], name="AI Elec (kW)", line=dict(color="#10B981", width=2.5)), secondary_y=False)
+    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['hvac_gas_kw'], name="AI Gas Demand (kW)", line=dict(color="#06B6D4", width=1.5, dash="dot")), secondary_y=False)
+    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['tou_price'], name="TOU Rate ($/kWh)", line=dict(color="#F59E0B", width=1.5, dash="dash")), secondary_y=True)
     
-    fig_power.add_trace(go.Scatter(x=df_b_plot[x_col], y=df_b_plot['hvac_elec_kw'], name="Baseline Elec (kW)", line=dict(color="#FF5252", width=1.5)), secondary_y=False)
-    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['hvac_elec_kw'], name="AI Elec (kW)", line=dict(color="#00E676", width=2.5)), secondary_y=False)
-    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['hvac_gas_kw'], name="AI Gas Demand (kW)", line=dict(color="#29B6F6", width=1.5, dash="dot")), secondary_y=False)
-    fig_power.add_trace(go.Scatter(x=df_a_plot[x_col], y=df_a_plot['tou_price'], name="TOU Rate ($/kWh)", line=dict(color="#FFB300", width=1.5, dash="dash")), secondary_y=True)
-    
-    # Handle the 5.5-month gap if viewing all days on continuous simulation hours
     if season_filter.startswith("All") and not view_mode.startswith("24-Hour"):
         fig_power.update_xaxes(rangebreaks=[dict(bounds=[360.0, 4344.0])])
         
-    fig_power.update_layout(template="plotly_dark", title="HVAC Power Profile & Price Responsiveness", xaxis_title=x_label, height=450)
-    fig_power.update_yaxes(title_text="Demand Rate (kW)", secondary_y=False)
-    fig_power.update_yaxes(title_text="TOU Price ($/kWh)", secondary_y=True)
+    fig_power = apply_minimalist_layout(fig_power, "HVAC Power Profile & Price Responsiveness", x_label, "Demand Rate (kW)", height=450)
+    fig_power.update_yaxes(title_text="TOU Price ($/kWh)", secondary_y=True, showgrid=False)
     st.plotly_chart(fig_power, width="stretch")
     
-    st.markdown("---")
     col_c1, col_c2 = st.columns(2)
-    
     with col_c1:
         st.markdown("""
         <div class="callout-box">
@@ -323,8 +395,8 @@ with tab2:
         
     with col_c2:
         st.markdown("""
-        <div class="callout-box" style="border-left-color: #00E5FF;">
-            <div class="callout-title" style="color: #00E5FF;">☀️ SUMMER: TOU Zero-Energy Reheat Elimination</div>
+        <div class="callout-box" style="border-left-color: #06B6D4;">
+            <div class="callout-title" style="color: #06B6D4;">☀️ SUMMER: TOU Zero-Energy Reheat Elimination</div>
             <div class="callout-text">
                 <b>How did the AI achieve 0.00 kWh HVAC energy across all TOU tiers?</b><br>
                 • <b>Reheat Fighting Elimination</b>: In the unmanaged baseline, VAV terminal boxes fight central cooling by reheating supply air during summer. By lowering the summer heating floor to 16.0°C, the AI completely eliminated simultaneous VAV reheat.<br>
@@ -348,28 +420,27 @@ with tab3:
     
     fig_pmv = go.Figure()
     fig_pmv.add_hrect(y0=-0.5, y1=0.5, fillcolor="green", opacity=0.15, line_width=0, annotation_text="ASHRAE 55 Comfort Band (-0.5 to +0.5)")
-    fig_pmv.add_trace(go.Scatter(x=df_b_pmv[x_col], y=df_b_pmv['zone_pmv'], name="Baseline PMV", line=dict(color="#FF5252", width=1.5)))
-    fig_pmv.add_trace(go.Scatter(x=df_a_pmv[x_col], y=df_a_pmv['zone_pmv'], name="AI Optimized PMV", line=dict(color="#00E676", width=2.5)))
+    fig_pmv.add_trace(go.Scatter(x=df_b_pmv[x_col], y=df_b_pmv['zone_pmv'], name="Baseline PMV", line=dict(color="#F43F5E", width=1.5)))
+    fig_pmv.add_trace(go.Scatter(x=df_a_pmv[x_col], y=df_a_pmv['zone_pmv'], name="AI Optimized PMV", line=dict(color="#10B981", width=2.5)))
     
     if season_filter.startswith("All") and not view_mode.startswith("24-Hour"):
         fig_pmv.update_xaxes(rangebreaks=[dict(bounds=[360.0, 4344.0])])
         
-    fig_pmv.update_layout(template="plotly_dark", title="Zone PMV Trajectory (Whole Building Average)", xaxis_title=x_label, yaxis_title="Predicted Mean Vote (PMV)", yaxis=dict(range=[-2.2, 2.2]), height=450)
+    fig_pmv = apply_minimalist_layout(fig_pmv, "Zone PMV Trajectory (Whole Building Average)", x_label, "Predicted Mean Vote (PMV)", height=450)
+    fig_pmv.update_yaxes(range=[-2.2, 2.2])
     st.plotly_chart(fig_pmv, width="stretch")
     
-    st.markdown("---")
     col_t1, col_t2 = st.columns(2)
-    
     with col_t1:
         st.subheader("🌡️ Zone Temp (°C) vs. Dynamic AI Setpoints")
         df_a_temp = df_a_filt.groupby(['sim_time_hours', 'hour_of_day']).agg({'zone_temp_c': 'mean', 'heating_sp_c': 'mean', 'cooling_sp_c': 'mean'}).reset_index()
         fig_temp = go.Figure()
-        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['zone_temp_c'], name="Indoor Air Temp (°C)", line=dict(color="#00E676", width=2)))
-        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['heating_sp_c'], name="Heating Setpoint (°C)", line=dict(color="#FF5252", dash="dash")))
-        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['cooling_sp_c'], name="Cooling Setpoint (°C)", line=dict(color="#00E5FF", dash="dash")))
+        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['zone_temp_c'], name="Indoor Air Temp (°C)", line=dict(color="#10B981", width=2)))
+        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['heating_sp_c'], name="Heating Setpoint (°C)", line=dict(color="#F43F5E", dash="dash")))
+        fig_temp.add_trace(go.Scatter(x=df_a_temp[x_col], y=df_a_temp['cooling_sp_c'], name="Cooling Setpoint (°C)", line=dict(color="#06B6D4", dash="dash")))
         if season_filter.startswith("All") and not view_mode.startswith("24-Hour"):
             fig_temp.update_xaxes(rangebreaks=[dict(bounds=[360.0, 4344.0])])
-        fig_temp.update_layout(template="plotly_dark", xaxis_title=x_label, yaxis_title="Temperature (°C)", height=380)
+        fig_temp = apply_minimalist_layout(fig_temp, "Indoor Air Temperatures vs Active Setpoints", x_label, "Temperature (°C)", height=380)
         st.plotly_chart(fig_temp, width="stretch")
         
     with col_t2:
@@ -377,10 +448,10 @@ with tab3:
         st.markdown("ℹ️ *Honest Technical Framing*: In this EnergyPlus system, mechanical ventilation is governed by the unmanaged building baseline schedule ($80\\%$ occupied / $10\\%$ unoccupied). The AI agent monitors real-time air mass flow ($kg/s$) and logs advisory IAQ commentary via MCP, but does not override damper actuators.")
         df_a_iaq = df_a_filt.groupby(['sim_time_hours', 'hour_of_day'])['zone_iaq_vent_flow'].mean().reset_index()
         fig_iaq = go.Figure()
-        fig_iaq.add_trace(go.Scatter(x=df_a_iaq[x_col], y=df_a_iaq['zone_iaq_vent_flow'], name="Ventilation Mass Flow (kg/s)", line=dict(color="#AB47BC", width=2)))
+        fig_iaq.add_trace(go.Scatter(x=df_a_iaq[x_col], y=df_a_iaq['zone_iaq_vent_flow'], name="Ventilation Mass Flow (kg/s)", line=dict(color="#A855F7", width=2)))
         if season_filter.startswith("All") and not view_mode.startswith("24-Hour"):
             fig_iaq.update_xaxes(rangebreaks=[dict(bounds=[360.0, 4344.0])])
-        fig_iaq.update_layout(template="plotly_dark", xaxis_title=x_label, yaxis_title="Mass Flow Rate (kg/s)", height=330)
+        fig_iaq = apply_minimalist_layout(fig_iaq, "Mechanical Air Mass Flow Rate", x_label, "Mass Flow Rate (kg/s)", height=330)
         st.plotly_chart(fig_iaq, width="stretch")
 
 # =========================================================
@@ -391,7 +462,6 @@ with tab4:
     st.markdown("Full transparency log of Ollama Llama 3.1 decisions triggered at **3-hour simulation intervals ($180\\text{ minutes}$)**. The agent evaluates multi-zone telemetry, TOU utility tariffs, and occupancy schedules, applying actuator commands directly via **MCP tool calls**:")
     
     if not df_decisions.empty:
-        # Filter decisions by season if selected
         if season_filter == "❄️ Winter Representative Day (Jan 15)":
             df_dec_show = df_decisions[df_decisions['sim_time_hours'] <= 360.0]
         elif season_filter == "☀️ Summer Representative Day (Jul 1)":
