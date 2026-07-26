@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.26 15:19
+Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.26 19:57
 ! <Version>, Version ID
  Version, 26.1
 ! <Timesteps per Hour>, #TimeSteps, Minutes per TimeStep {minutes}
@@ -807,22 +807,3 @@ Environment:Daylight Saving,No,RunPeriod Object
 Environment:WarmupDays,  6
 ! <Tabular Report>,Style,Unit Conversion, Format Reals
 Tabular Report,HTML,None,Yes
-! <Warmup Convergence Information>,Zone Name,Environment Type/Name,Average Warmup Temperature Difference {deltaC},Std Dev Warmup Temperature Difference {deltaC},Max Temperature Pass/Fail Convergence,Min Temperature Pass/Fail Convergence,Average Warmup Load Difference {W},Std Dev Warmup Load Difference {W},Heating Load Pass/Fail Convergence,Cooling Load Pass/Fail Convergence
- Warmup Convergence Information,PLENUM-1,RunPeriod: WINTER REPRESENTATIVE DAY,9.9379382032E-002,6.6540779559E-002,Pass,Pass,3.6424283571E-002,4.3917628508E-002,Pass,Pass
- Warmup Convergence Information,SPACE1-1,RunPeriod: WINTER REPRESENTATIVE DAY,0.1114109049,0.2739515376,Pass,Pass,0.5084551583,1.8100130500,Pass,Pass
- Warmup Convergence Information,SPACE2-1,RunPeriod: WINTER REPRESENTATIVE DAY,0.1039728430,0.2897586840,Pass,Pass,0.2685634185,0.6486994927,Pass,Pass
- Warmup Convergence Information,SPACE3-1,RunPeriod: WINTER REPRESENTATIVE DAY,7.6620672848E-002,0.2766624401,Pass,Pass,0.6701860932,2.8035892953,Pass,Pass
- Warmup Convergence Information,SPACE4-1,RunPeriod: WINTER REPRESENTATIVE DAY,8.1313608860E-002,0.3020764338,Pass,Pass,0.2469691268,0.7515250118,Pass,Pass
- Warmup Convergence Information,SPACE5-1,RunPeriod: WINTER REPRESENTATIVE DAY,4.9291864249E-002,0.1465764361,Pass,Pass,0.1083991048,0.5167381700,Pass,Pass
-Environment,SUMMER REPRESENTATIVE DAY,WeatherFileRunPeriod,07/01/2007,07/01/2007,Sunday,1,Use RunPeriod Specified Day,No,No,No,Yes,Yes,Clark and Allen
-Environment:Daylight Saving,No,RunPeriod Object
-Environment:WarmupDays,  6
- Warmup Convergence Information,PLENUM-1,RunPeriod: SUMMER REPRESENTATIVE DAY,9.3404161646E-002,5.3201057788E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE1-1,RunPeriod: SUMMER REPRESENTATIVE DAY,6.0083139321E-002,4.0109583233E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE2-1,RunPeriod: SUMMER REPRESENTATIVE DAY,8.7600342158E-002,6.3851759614E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE3-1,RunPeriod: SUMMER REPRESENTATIVE DAY,8.3601735447E-002,5.8095752877E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE4-1,RunPeriod: SUMMER REPRESENTATIVE DAY,8.9297732721E-002,5.7563793597E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
- Warmup Convergence Information,SPACE5-1,RunPeriod: SUMMER REPRESENTATIVE DAY,3.2236177495E-002,1.6874750300E-002,Pass,Pass,0.0000000000,0.0000000000,Pass,Pass
-! <Program Control Information:Threads/Parallel Sims>, Threading Supported,Maximum Number of Threads, Env Set Threads (OMP_NUM_THREADS), EP Env Set Threads (EP_OMP_NUM_THREADS), IDF Set Threads, Number of Threads Used (Interior Radiant Exchange), Number Nominal Surfaces, Number Parallel Sims
-Program Control Information:Threads/Parallel Sims, No,1, N/A, N/A, N/A, N/A, N/A, N/A
-End of Data

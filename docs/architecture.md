@@ -1,4 +1,4 @@
-# Deliverable #4: System Architecture Document
+# System Architecture Document
 **Honeywell Campus Connect — AI-Powered Autonomous Smart Building Optimization Challenge**
 **Project Title**: ISOTHERM — Physical AI Closed-Loop Building Operations  
 **Target Audience**: Technical Judges (EnergyPlus, Model Context Protocol, and LLM Agent Architectures)
