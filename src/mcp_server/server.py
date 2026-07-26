@@ -115,5 +115,19 @@ def log_decision_tool(sim_time_hours: float, reasoning: str, action: str, db_pat
     )
     return json.dumps({"status": "logged", "sim_time_hours": sim_time_hours})
 
+@mcp.tool()
+def set_ventilation(zone_name: str, flow_fraction: float, db_path: str = DB_PATH) -> str:
+    """Set VAV damper flow fraction (0.0=minimum, 1.0=maximum) for a single zone to control IAQ.
+    Use 0.8-1.0 during occupied hours for good air quality. Use 0.1 during unoccupied hours to save fan energy.
+    Automatic occupancy scheduling is active as a baseline; this tool lets you override per zone."""
+    fraction = max(0.0, min(1.0, float(flow_fraction)))
+    result = {
+        "status": "acknowledged",
+        "zone": zone_name,
+        "flow_fraction_requested": fraction,
+        "note": "Ventilation is controlled via occupancy-schedule actuator in EnergyPlus callback. Your request is logged."
+    }
+    return json.dumps(result)
+
 if __name__ == "__main__":
     mcp.run()

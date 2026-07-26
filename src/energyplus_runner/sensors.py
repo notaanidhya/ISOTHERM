@@ -9,6 +9,11 @@ class SensorRegistry:
         self.outdoor_temp_handle = -1
         self.hvac_power_handle = -1
         self.is_meter_handle = False
+        self.gas_power_handle = -1    # Phase 02: NaturalGas:Facility for heating savings
+        
+        # Cumulative meter state tracking (EnergyPlus get_meter_value returns cumulative Joules)
+        self.prev_elec_joules = 0.0
+        self.prev_gas_joules  = 0.0
         self.initialized = False
 
     def init_handles(self, state, api):
@@ -49,6 +54,11 @@ class SensorRegistry:
         else:
             self.is_meter_handle = False
 
+        # NaturalGas:Facility meter — captures boiler/heating coil energy savings from setback
+        self.gas_power_handle = api.exchange.get_meter_handle(state, "NaturalGas:Facility")
+        if self.gas_power_handle == -1:
+            self.gas_power_handle = api.exchange.get_meter_handle(state, "Heating:NaturalGas")
+
         self.initialized = True
         meter_name = "N/A"
         if self.is_meter_handle and self.hvac_power_handle != -1:
@@ -56,7 +66,7 @@ class SensorRegistry:
                 meter_name = api.exchange.get_meter_name(state, self.hvac_power_handle)
             except Exception:
                 meter_name = "Electricity:HVAC"
-        print(f"[Sensors] Handles initialized for 5 zones. Outdoor: {self.outdoor_temp_handle}, HVAC Power handle: {self.hvac_power_handle} (is_meter={self.is_meter_handle}, meter_name='{meter_name}'), PMV handles: {self.pmv_handles}")
+        print(f"[Sensors] Handles initialized for 5 zones. Outdoor: {self.outdoor_temp_handle}, HVAC elec handle: {self.hvac_power_handle} (is_meter={self.is_meter_handle}, meter='{meter_name}'), Gas handle: {self.gas_power_handle}, PMV handles: {self.pmv_handles}")
 
     def read_zone_sensors(self, state, api, zone_name: str) -> dict:
         """Reads temperature, PMV, and IAQ flow rate for a given zone."""
@@ -83,25 +93,36 @@ class SensorRegistry:
         }
 
     def read_environment_sensors(self, state, api) -> dict:
-        """Reads outdoor temperature and overall HVAC power demand."""
+        """Reads outdoor temperature, electric HVAC demand, and natural gas heating demand.
+        hvac_power_kw = electricity + gas combined (total HVAC energy rate for current timestep),
+        enabling meaningful comparison of heating energy savings from night setback.
+        Calculates delta Joules for cumulative meter readings to prevent cumulative odometer inflation."""
         outdoor_temp = None
-        hvac_kw = 0.0
+        elec_kw = 0.0
+        gas_kw  = 0.0
 
         if self.outdoor_temp_handle != -1:
             outdoor_temp = api.exchange.get_variable_value(state, self.outdoor_temp_handle)
 
         if self.hvac_power_handle != -1:
             if self.is_meter_handle:
-                # Meter value returns Joules per timestep -> convert to average kW (900 seconds)
-                joules = api.exchange.get_meter_value(state, self.hvac_power_handle)
-                hvac_kw = joules / 900.0 / 1000.0 if joules > 0 else 0.0
+                curr_elec = api.exchange.get_meter_value(state, self.hvac_power_handle)
+                delta_elec = max(0.0, curr_elec - self.prev_elec_joules) if self.prev_elec_joules > 0 else 0.0
+                self.prev_elec_joules = curr_elec
+                elec_kw = delta_elec / 900.0 / 1000.0
             else:
-                # Variable value returns instantaneous Demand Rate in Watts -> convert to kW
                 watts = api.exchange.get_variable_value(state, self.hvac_power_handle)
-                hvac_kw = watts / 1000.0 if watts > 0 else 0.0
+                elec_kw = watts / 1000.0 if watts and watts > 0 else 0.0
+
+        if self.gas_power_handle != -1:
+            curr_gas = api.exchange.get_meter_value(state, self.gas_power_handle)
+            delta_gas = max(0.0, curr_gas - self.prev_gas_joules) if self.prev_gas_joules > 0 else 0.0
+            self.prev_gas_joules = curr_gas
+            gas_kw = delta_gas / 900.0 / 1000.0
 
         return {
             "outdoor_temp_c": outdoor_temp,
-            "hvac_power_kw": hvac_kw
+            "hvac_power_kw": elec_kw + gas_kw,   # combined timestep average kW rate
+            "elec_kw": elec_kw,
+            "gas_kw": gas_kw,
         }
-

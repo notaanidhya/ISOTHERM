@@ -1,6 +1,9 @@
-Metric,Baseline,AI Optimized,Savings,Savings (%)
-HVAC Energy Consumption (kWh),391.61194505341473,388.17482475766496,3.4371202957497644,0.877685254284302
-Electricity Cost ($ USD),36.70400278228069,36.21421030012573,0.48979248215496085,1.3344388759457435
-Peak Demand (kW),0.5051466959580643,0.4128945590090085,0.09225213694905576,18.262444887240093
-Comfort Compliance (%),51.96022727272728,87.89772727272728,35.9375,0.0
-IAQ Flow Monitored (%) [Uncontrolled],7.291666666666667,7.291666666666667,0.0,0.0
+Metric,Baseline,AI Optimized,Delta,Change (%)
+Total HVAC Energy (kWh),0.65,2.45,-1.80,-276.0%
+Unoccupied Energy (kWh),0.65,1.59,-0.94,-143.9%
+Electricity Cost ($ USD),$0.03,$0.22,$-0.18,-562.0%
+Peak Demand (kW),0.36,0.69,-0.33,-93.8%
+Carbon Emissions (kg CO2),0.21,0.94,-0.73,-351.5%
+Occupied Comfort PMV Compliance (%),49.3%,49.6%,+0.3pp,N/A
+Peak-Hour Comfort Compliance (%),48.7%,49.1%,+0.4pp,N/A
+IAQ Flow Monitored (%) [Schedule-driven],0.0%,0.0%,+0.0pp,N/A

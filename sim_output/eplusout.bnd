@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 23:46
+Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.26 11:22
 ! This file shows details about the branches, nodes, and other
 ! elements of the flow connections.
 ! This file is intended for use in "debugging" potential problems
@@ -643,4 +643,13 @@ Program Version,EnergyPlus, Version 26.1.0-6f2e40d102, YMD=2026.07.25 23:46
  Non-Parent Node Connection,OA MIXING BOX 1 INLET NODE,OUTDOORAIR:MIXER,OA MIXING BOX 1,Inlet,1
  Non-Parent Node Connection,RELIEF AIR OUTLET NODE 1,OUTDOORAIR:MIXER,OA MIXING BOX 1,ReliefAir,1
  Non-Parent Node Connection,VAV SYS 1 INLET NODE,OUTDOORAIR:MIXER,OA MIXING BOX 1,Inlet,1
- Non-Parent Node Connection,MAIN HEATING COIL 1 OUTLET NODE,FAN
+ Non-Parent Node Connection,MAIN HEATING COIL 1 OUTLET NODE,FAN:VARIABLEVOLUME,SUPPLY FAN 1,Inlet,1
+ Non-Parent Node Connection,VAV SYS 1 OUTLET NODE,FAN:VARIABLEVOLUME,SUPPLY FAN 1,Outlet,1
+ Non-Parent Node Connection,MIXED AIR NODE 1,CONTROLLER:OUTDOORAIR,OA CONTROLLER 1,Sensor,1
+ Non-Parent Node Connection,OUTSIDE AIR INLET NODE 1,CONTROLLER:OUTDOORAIR,OA CONTROLLER 1,Actuator,1
+ Non-Parent Node Connection,RELIEF AIR OUTLET NODE 1,CONTROLLER:OUTDOORAIR,OA CONTROLLER 1,Actuator,1
+ Non-Parent Node Connection,VAV SYS 1 INLET NODE,CONTROLLER:OUTDOORAIR,OA CONTROLLER 1,Sensor,1
+ Non-Parent Node Connection,HW SUPPLY INLET NODE,PUMP:VARIABLESPEED,HW CIRC PUMP,Inlet,1
+ Non-Parent Node Connection,HW PUMP OUTLET NODE,PUMP:VARIABLESPEED,HW CIRC PUMP,Outlet,1
+ Non-Parent Node Connection,CW SUPPLY INLET NODE,PUMP:VARIABLESPEED,CW CIRC PUMP,Inlet,1
+ Non-Parent Node Connection,CW PUMP OUTLET NODE,PUMP:VARIABLESPEED,CW CIRC PUMP,Outlet,1

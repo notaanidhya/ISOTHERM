@@ -38,6 +38,13 @@ def create_synchronous_callback(api, db_path=DB_PATH):
         hour_of_day = int(sim_time_hours) % 24
         is_unoccupied = not (OCCUPIED_HOURS[0] <= hour_of_day < OCCUPIED_HOURS[1])
 
+        # Automatic transition: when entering occupied hours (08:00), ensure setpoints aren't left in night setback
+        if not is_unoccupied:
+            for z in ZONES:
+                if current_setpoints[z]["heating_c"] < 19.0:
+                    h_safe, c_safe = actuators.set_zone_setpoint(state, api, z, 20.5, 24.5)
+                    current_setpoints[z] = {"heating_c": h_safe, "cooling_c": c_safe}
+
         # 2. Apply any pending actions from action_queue (with occupancy clamps)
         pending = get_pending_actions(db_path=db_path)
         for act in pending:
@@ -48,6 +55,10 @@ def create_synchronous_callback(api, db_path=DB_PATH):
             h_safe, c_safe = actuators.set_zone_setpoint(state, api, z, htg, clg)
             current_setpoints[z] = {"heating_c": h_safe, "cooling_c": c_safe}
             mark_action_applied(act["id"], db_path=db_path)
+
+        # Phase 02 — Apply automatic occupancy-based ventilation every timestep
+        # (LLM can override per-zone via set_ventilation MCP tool if wired)
+        actuators.apply_occupancy_ventilation(state, api, hour_of_day)
 
         # 3. Read environment sensors
         env = sensors.read_environment_sensors(state, api)

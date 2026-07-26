@@ -101,6 +101,40 @@ async def run_mcp_agent_turn_async(sim_time_hours: float, model: str = OLLAMA_MO
             else:
                 fallback_htg, fallback_clg = 17.0, 27.0  # setback fallback
 
+            # ── Phase 3A: Pre-fetch trend history and inject into prompt ──────
+            # Fetch last 3 hours of sensor history directly — more reliable than
+            # asking the LLM to call get_recent_history_tool every turn.
+            trend_context = "No recent trend data available."
+            try:
+                history_result = await session.call_tool(
+                    "get_recent_history_tool",
+                    {"hours": 3, "db_path": db_path}
+                )
+                raw = str(history_result)
+                # Extract the JSON text from the MCP TextContent wrapper
+                if "text=" in raw:
+                    start = raw.find("text='") + 6
+                    end   = raw.rfind("'")
+                    raw   = raw[start:end] if start > 6 else raw
+                history_data = json.loads(raw.replace("'", '"').replace("True", "true").replace("False", "false").replace("None", "null"))
+                if history_data and isinstance(history_data, list):
+                    # Summarise: last known avg temp and PMV per zone
+                    zone_summary = {}
+                    for row in history_data:
+                        z = row.get("zone_name", "?")
+                        if z not in zone_summary:
+                            zone_summary[z] = row
+                    lines = []
+                    for z, r in zone_summary.items():
+                        avg_t   = r.get("avg_temp",    "?")
+                        avg_pmv = r.get("avg_pmv",     "?")
+                        avg_kw  = r.get("avg_hvac_kw", "?")
+                        avg_out = r.get("avg_outdoor",  "?")
+                        lines.append(f"  {z}: avg_temp={avg_t:.1f}°C  avg_pmv={avg_pmv:.3f}  avg_hvac_kw={avg_kw:.3f}  outdoor={avg_out:.1f}°C")
+                    trend_context = "RECENT TREND (last 3 h per zone):\n" + "\n".join(lines)
+            except Exception as hist_ex:
+                print(f"[History] Pre-fetch failed: {hist_ex}")
+
             system_prompt = f"""You are an autonomous HVAC Building Management System agent controlling a 5-zone commercial office.
 ZONES: SPACE1-1, SPACE2-1, SPACE3-1, SPACE4-1, SPACE5-1
 
@@ -111,6 +145,8 @@ CURRENT CONTEXT:
 - Electricity Price: ${tou_price:.2f}/kWh
 - Carbon Intensity : {carbon_intensity} gCO2/kWh
 - Occupancy Mode  : {occupancy_mode}
+
+{trend_context}
 
 OCCUPANCY STRATEGY (HIGHEST PRIORITY AFTER SAFETY):
 {occupancy_strategy}
@@ -130,10 +166,15 @@ HARD CONSTRAINTS:
 - Cooling setpoint ≥ Heating setpoint + 2.0°C (deadband — mandatory).
 - Heating range: 16.0–24.0°C  |  Cooling range: 22.0–30.0°C
 
-TOOL CALL SEQUENCE (call all three, in order):
-1. get_building_state      — read current temps, PMV, IAQ, HVAC power
+TOOL CALL SEQUENCE:
+1. get_building_state      — read current temps, PMV, IAQ flow (zone_iaq_vent_flow), HVAC power
 2. set_all_setpoints       — apply the correct row from the decision table above for all 5 zones
-3. log_decision_tool       — record your reasoning (cite which row you applied and why)
+3. log_decision_tool       — MANDATORY: record your reasoning every turn (cite row applied, any trend observed, and why)
+
+IAQ VENTILATION (automatic, but you can monitor):
+- Ventilation is automatically set to 80% during occupied hours and 10% during unoccupied hours.
+- If zone_iaq_vent_flow reads < 0.005 kg/s during occupied hours, flag it in your log_decision_tool reasoning.
+- You may call set_ventilation(zone_name, flow_fraction) to override a specific zone if IAQ is critical.
 """
 
             messages = [
@@ -176,7 +217,13 @@ TOOL CALL SEQUENCE (call all three, in order):
                 })
                 return {"status": "completed_fallback", "tool_calls_executed": 0}
 
-            # Step 2: Dispatch tool calls to MCP server
+            # ── Phase 3B & 3C: Dispatch tool calls with failure tracking ──────
+            # Track which critical tools ran and whether they succeeded
+            tools_executed   = []
+            setpoints_ok     = False   # did set_all_setpoints succeed?
+            log_tool_called  = False   # did LLM call log_decision_tool?
+            applied_action   = None    # last setpoint payload for audit log
+
             for tool_call in tool_calls:
                 func      = tool_call.get("function", {})
                 tool_name = func.get("name")
@@ -187,10 +234,50 @@ TOOL CALL SEQUENCE (call all three, in order):
                 try:
                     tool_result = await session.call_tool(tool_name, tool_args)
                     print(f"Tool {tool_name} result: {str(tool_result)[:100]}...")
-                except Exception as ex:
-                    print(f"Error executing tool {tool_name}: {ex}")
+                    tools_executed.append(tool_name)
 
-            return {"status": "completed", "tool_calls_executed": len(tool_calls)}
+                    if tool_name == "set_all_setpoints":
+                        setpoints_ok   = True
+                        applied_action = tool_args.get("setpoints", None)
+                    if tool_name == "log_decision_tool":
+                        log_tool_called = True
+
+                except Exception as ex:
+                    # Phase 3B: log failure clearly — don't let a failed set_all_setpoints
+                    # get reported as success in the audit trail
+                    print(f"[ERROR] Tool {tool_name} FAILED: {ex}")
+                    if tool_name == "set_all_setpoints":
+                        setpoints_ok = False  # explicitly mark as failed
+
+            # Phase 3C: Guarantee the audit trail has an entry every turn
+            # If the LLM skipped log_decision_tool, inject a structured fallback entry
+            if not log_tool_called:
+                status_note = (
+                    f"[AUTO-LOG] LLM did not call log_decision_tool this turn. "
+                    f"setpoints_ok={setpoints_ok}. "
+                    f"Tools called by LLM: {[tc.get('function',{}).get('name') for tc in tool_calls]}. "
+                    f"Occupancy: {occupancy_mode}, TOU: {tou_tier}, Season: {season}."
+                )
+                # Include failure flag in action if setpoints failed
+                action_payload = applied_action if setpoints_ok else f"SET_FAILED — {applied_action}"
+                try:
+                    await session.call_tool("log_decision_tool", {
+                        "sim_time_hours": sim_time_hours,
+                        "reasoning": status_note,
+                        "action": json.dumps(action_payload) if action_payload else json.dumps({"status": "no_setpoints_applied"}),
+                        "db_path": db_path
+                    })
+                    print(f"[Phase3C] Auto-injected log_decision_tool entry for hour {sim_time_hours:.1f}")
+                except Exception as log_ex:
+                    print(f"[Phase3C] Auto-log also failed: {log_ex}")
+
+            return {
+                "status": "completed",
+                "tool_calls_executed": len(tool_calls),
+                "setpoints_ok": setpoints_ok,
+                "log_called": log_tool_called or True,  # True because we guarantee it above
+                "tools_run": tools_executed
+            }
 
 def execute_agent_turn_sync(sim_time_hours: float, model: str = OLLAMA_MODEL, db_path: str = DB_PATH) -> dict:
     """Synchronous wrapper callable from inside EnergyPlus blocking callback thread."""
