@@ -1,0 +1,73 @@
+# Virtual Environments & Packages
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js / UI Build artifacts
+node_modules/
+react_dashboard/dist/
+react_dashboard/.vite/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Antigravity / Gemini & Editor files
+.gemini/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Temporary / Scratch EnergyPlus Simulation Outputs
+eplusout.*
+eplusmtr.csv
+epluspsz.csv
+eplusssz.csv
+epluszsz.csv
+eplustbl.htm
+eplusmap.csv
+sqlite.err
+*.eso
+*.rdd
+*.mdd
+*.shd
+*.bnd
+*.eio
+*.end
+*.err
+*.mtd
+*.slr
+*.dxf
+*.audit
+*.rvaudit
+*.wrl
+api_test_output/
+baseline_output/
+scratch_output/
+sim_output/
+test_out/
+test_prepared_output/
+scratch/
+TRASH/
+
+# Temporary OS / Archive files
+*.tmp
+*.temp
+*.bak
+*.old
+*~
+*.zip
+*.tar.gz
+*.rar
+
+# Note: We explicitly PRESERVE sim_state.db and baseline_state.db so dashboard works immediately without running a simulation!
+!sim_state.db
+!baseline_state.db

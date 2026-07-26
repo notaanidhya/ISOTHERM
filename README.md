@@ -55,6 +55,8 @@ flowchart TD
     SQL_STATE -->|10. Exports audited metrics| DASH
 ```
 
+*(Note: On GitHub and modern IDEs, the Mermaid diagram above renders automatically as an interactive flowchart. To view the standalone rendered vector diagram or export it as a PNG, open `docs/architecture.html` in your browser).*
+
 ### Defense-in-Depth Safety Hierarchy
 To guarantee zero equipment failures or temperature violations, ISOTHERM enforces a 4-layer safety architecture:
 1. **Schema Validation & Retry**: Pydantic and JSON syntax validation intercepts malformed tool calls before execution.
